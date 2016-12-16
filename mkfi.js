@@ -228,17 +228,6 @@ window.addListeners = function($) {
       })
   });
 
-  // Toggle 'create revised budget' option
-  $(document).on('knack-view-render.view_431', function(event, view, data) {
-    $('#view_431').css('display', 'none');
-    setTimeout(function() {
-      rehab_setup_id = data["field_639_raw"][0];
-      if (data["field_801"] > 1) {
-        $('#view_509').css('display', 'none');
-      }
-    }, 200);
-  });
-
   // Create new expense record
   $(document).on('knack-view-render.view_510', function(event, view, data) {
     $('#view_510 input[type=submit]').on("click", function(e) {
@@ -257,6 +246,17 @@ window.addListeners = function($) {
       ajaxCall('POST', 'object_18/records', getPre, data);
       return false;
     });
+  });
+
+  // Toggle 'create revised budget' option
+  $(document).on('knack-view-render.view_431', function(event, view, data) {
+    $('#view_431').css('display', 'none');
+    setTimeout(function() {
+      rehab_setup_id = data["field_639_raw"][0];
+      if (data["field_801"] > 1) {
+        $('#view_509').css('display', 'none');
+      }
+    }, 200);
   });
 
   // Hide Edit Rehab Setup button so the link is not available, but the edit screen continues to exist
