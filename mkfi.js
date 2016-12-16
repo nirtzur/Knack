@@ -218,7 +218,7 @@ window.addListeners = function($) {
     $('#view_431').css('display', 'none');
     setTimeout(function() {
       rehab_setup_id = data["field_639_raw"][0];
-      if (data["field_622"] > 1) {
+      if (data["field_801"] > 1) {
         $('#view_334').css('display', 'none');
       }
     }, 200);
