@@ -13,7 +13,7 @@ window.addListeners = function($) {
         typeof callback === 'function' && callback(response);
       },
       error: function(e) {
-        alert(e);
+        alert(JSON.stringify(e));
       }
     })
   }
@@ -87,7 +87,7 @@ window.addListeners = function($) {
   function getLastSetup(view) {
     ajaxCall('GET', 'object_26/records/' + '?format=raw&sort_field=field_638&sort_order=desc&rows_per_page=1', createSetup);
   }
-  
+
   // set restriction and last action indication color on full row
   $(document).on('knack-view-render.view_88', function(event, view, data) {
       $("tbody td span.col-0").each(function() {
