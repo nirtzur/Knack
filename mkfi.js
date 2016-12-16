@@ -141,7 +141,6 @@ window.addListeners = function($) {
     }
   }
 
-
   function sub_records(obj, fld) {
     var filters = [
       {
@@ -152,24 +151,13 @@ window.addListeners = function($) {
     ]
 
     ajaxCall('GET', obj + '/records?format=raw&filters=' + encodeURIComponent(JSON.stringify(filters)), function(response) { duplicate_subs(response, obj, fld) } );
-
-  }
-
-  function get_sub_records() {
-    sub_records('object_19', 'field_470');
-    sub_records('object_20', 'field_471');
-    sub_records('object_21', 'field_469');
   }
     
-  function updatePre(data) {
-    $('.kn-message p')[0].innerHTML= "Updating Pre Property record"
-    ids = data["field_468"].map(function(a) { return a["id"] });
-    ids.push(new_identifier);
-
-    ajaxCall('PUT', 'object_22/records/' + preproperty_id, null , {"field_468": ids});
-
+  function updateSubRecords(data) {
     if (create_budget) {
-      get_sub_records();
+      sub_records('object_19', 'field_470');
+      sub_records('object_20', 'field_471');
+      sub_records('object_21', 'field_469');
     }
     
     $('.kn-message p')[0].innerHTML= "Redirecting to newly created record"
@@ -180,7 +168,7 @@ window.addListeners = function($) {
   function getPre(data) {
     $('.kn-message p')[0].innerHTML= "Getting Pre Property to update"
     new_identifier = data["id"];
-    ajaxCall('GET', 'object_22/records/' + preproperty_id + '?format=raw', updatePre);
+    ajaxCall('GET', 'object_22/records/' + preproperty_id + '?format=raw', updateSubRecords);
   }
 
   function createRecord(data) {
@@ -204,7 +192,7 @@ window.addListeners = function($) {
       $('.kn-form-confirmation').css('display', 'block');
       preproperty_id = $('.crumb')[0].value;
       current_budget = table.rows[table.rows.length - 1].id;
-    getMyData(view);
+      getMyData(view);
       return false;
     });
   });
