@@ -229,8 +229,8 @@ window.addListeners = function($) {
   });
 
   // Create new expense record
-  $(document).on('knack-view-render.view_510', function(event, view, data) {
-    $('#view_510 input[type=submit]').on("click", function(e) {
+  $(document).on('knack-view-render.view_513', function(event, view, data) {
+    $('#view_513 input[type=submit]').on("click", function(e) {
 
       $('.kn-form-confirmation').css('display', 'block');
       preproperty_id = $('.crumb')[0].value;
