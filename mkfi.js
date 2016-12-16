@@ -67,7 +67,6 @@ window.addListeners = function($) {
 
   // reduce table sizes in cashflow
   $(document).on('knack-page-render.scene_260', function(event, page) {
-    debugger;
     $('table.expand-records').css('width', 'inherit');
   });
 
