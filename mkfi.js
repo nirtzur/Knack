@@ -1,93 +1,93 @@
-// --------------- Pre-Property starts here ------------------
-function ajaxCall(action, path, callback, data) {
-  $.ajax({
-    url: 'https://api.knackhq.com/v1/objects/' + path,
-    type: action,
-    headers: {
-      'X-Knack-Application-Id': MKFI_APP_ID,
-      'X-Knack-REST-API-Key': MKFI_CODE
-    },
-    data: data,
-    success: function(response) {
-      typeof callback === 'function' && callback(response);
-    },
-    error: function(e) {
-      alert(e);
-    }
-  })
-}
+window.addListeners = function($) {
 
-var new_identifier;
-var preproperty_id;
-var current_budget;
-var create_budget;
-var rehab_setup_id;
-
-function duplicate_subs(response, obj, fld) {
-  for (var rec in response["records"]) {
-    var data = response["records"][rec];
-    data[fld] = new_identifier;
-    ajaxCall('POST', obj + '/records', null, data);
+  function ajaxCall(action, path, callback, data) {
+    $.ajax({
+      url: 'https://api.knackhq.com/v1/objects/' + path,
+      type: action,
+      headers: {
+        'X-Knack-Application-Id': MKFI_APP_ID,
+        'X-Knack-REST-API-Key': MKFI_CODE
+      },
+      data: data,
+      success: function(response) {
+        typeof callback === 'function' && callback(response);
+      },
+      error: function(e) {
+        alert(e);
+      }
+    })
   }
-}
 
-function sub_records(obj, fld) {
-  var filters = [
-    {
-      field: fld,
-      operator: 'contains',
-      value: current_budget
+  var new_identifier;
+  var preproperty_id;
+  var current_budget;
+  var create_budget;
+  var rehab_setup_id;
+
+  function duplicate_subs(response, obj, fld) {
+    for (var rec in response["records"]) {
+      var data = response["records"][rec];
+      data[fld] = new_identifier;
+      ajaxCall('POST', obj + '/records', null, data);
     }
-  ]
+  }
 
-  ajaxCall('GET', obj + '/records?format=raw&filters=' + encodeURIComponent(JSON.stringify(filters)), function(response) { duplicate_subs(response, obj, fld) } );
-}
-  
-function updateSubRecords(data) {
-  if (create_budget) {
-    sub_records('object_19', 'field_470');
-    sub_records('object_20', 'field_471');
-    sub_records('object_21', 'field_469');
+  function sub_records(obj, fld) {
+    var filters = [
+      {
+        field: fld,
+        operator: 'contains',
+        value: current_budget
+      }
+    ]
+
+    ajaxCall('GET', obj + '/records?format=raw&filters=' + encodeURIComponent(JSON.stringify(filters)), function(response) { duplicate_subs(response, obj, fld) } );
+  }
+    
+  function updateSubRecords(data) {
+    if (create_budget) {
+      sub_records('object_19', 'field_470');
+      sub_records('object_20', 'field_471');
+      sub_records('object_21', 'field_469');
+    }
+    
+    $('.kn-message p')[0].innerHTML= "Redirecting to newly created record"
+    window.location.href = "https://mkfiprecision.knack.com/database#rehab-budget/pre-property-details/" + preproperty_id + "/view-budget-details/" + new_identifier;
+
+  }
+
+  function getPre(data) {
+    $('.kn-message p')[0].innerHTML= "Getting Pre Property to update"
+    new_identifier = data["id"];
+    updateSubRecords();
+  }
+
+  function createRecord(data) {
+    $('.kn-message p')[0].innerHTML= "Creating new record";
+    data["field_579"] = "Revised";
+    
+    ajaxCall('POST', 'object_18/records', getPre, data);   
+  }
+
+  function getMyData(view) {
+    $('.kn-message p')[0].innerHTML = "Coping record";
+    ajaxCall('GET', 'object_18/records/' + current_budget + '?format=raw', createRecord);
+  }
+
+  function updateMaxSetup(data) {
+    ajaxCall('PUT', 'object_27/records/57953902ec4d42c8487f583e', null, {"field_674": data["id"]});
+    window.location.href = "https://mkfiprecision.knack.com/database#rehab-setup/edit-rehab-setup/" + data["id"];
+  }
+
+  function createSetup(response) {
+    ajaxCall('POST', 'object_26/records', updateMaxSetup, response["records"][0]);
+  }
+
+
+  function getLastSetup(view) {
+    ajaxCall('GET', 'object_26/records/' + '?format=raw&sort_field=field_638&sort_order=desc&rows_per_page=1', createSetup);
   }
   
-  $('.kn-message p')[0].innerHTML= "Redirecting to newly created record"
-  window.location.href = "https://mkfiprecision.knack.com/database#rehab-budget/pre-property-details/" + preproperty_id + "/view-budget-details/" + new_identifier;
-
-}
-
-function getPre(data) {
-  $('.kn-message p')[0].innerHTML= "Getting Pre Property to update"
-  new_identifier = data["id"];
-  updateSubRecords();
-}
-
-function createRecord(data) {
-  $('.kn-message p')[0].innerHTML= "Creating new record";
-  data["field_579"] = "Revised";
-  
-  ajaxCall('POST', 'object_18/records', getPre, data);   
-}
-
-function getMyData(view) {
-  $('.kn-message p')[0].innerHTML = "Coping record";
-  ajaxCall('GET', 'object_18/records/' + current_budget + '?format=raw', createRecord);
-}
-
-function updateMaxSetup(data) {
-  ajaxCall('PUT', 'object_27/records/57953902ec4d42c8487f583e', null, {"field_674": data["id"]});
-  window.location.href = "https://mkfiprecision.knack.com/database#rehab-setup/edit-rehab-setup/" + data["id"];
-}
-
-function createSetup(response) {
-  ajaxCall('POST', 'object_26/records', updateMaxSetup, response["records"][0]);
-}
-
-
-function getLastSetup(view) {
-  ajaxCall('GET', 'object_26/records/' + '?format=raw&sort_field=field_638&sort_order=desc&rows_per_page=1', createSetup);
-}
-
-window.addListeners = function($) { 
   // set restriction and last action indication color on full row
   $(document).on('knack-view-render.view_88', function(event, view, data) {
       $("tbody td span.col-0").each(function() {
