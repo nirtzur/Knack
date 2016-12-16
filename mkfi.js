@@ -185,7 +185,7 @@ window.addListeners = function($) {
   // Duplicate last budget update record
   $(document).on('knack-view-render.view_334', function (event, view, data) {
     $('#view_334 input[type=submit]').on("click", function(e) {
-      var table = $('.view_322 table')[0];
+      var table = $('.view_505 table')[0];
       create_budget = true;
 
       $('.kn-form-confirmation').css('display', 'block');
@@ -207,7 +207,7 @@ window.addListeners = function($) {
   });
 
   // set budget color on full row
-  $(document).on('knack-view-render.view_322', function(event, view, data) {
+  $(document).on('knack-view-render.view_505', function(event, view, data) {
       $("tbody td span.col-1").each(function() {
         $(this).parent().parent().css("backgroundColor", $(this).parent().css("backgroundColor"));
       })
