@@ -198,8 +198,8 @@ window.addListeners = function($) {
 
     
   // Duplicate last budget update record
-  $(document).on('knack-view-render.view_509', function(event, view, data) {
-    $('#view_509 input[type=submit]').on("click", function(e) {
+  $(document).on('knack-view-render.view_512', function(event, view, data) {
+    $('#view_512 input[type=submit]').on("click", function(e) {
       var table = $('.view_505 table')[0];
       create_budget = true;
 
@@ -254,7 +254,7 @@ window.addListeners = function($) {
     setTimeout(function() {
       rehab_setup_id = data["field_639_raw"][0];
       if (data["field_801"] > 1) {
-        $('#view_509').css('display', 'none');
+        $('#view_512').css('display', 'none');
       }
     }, 200);
   });
