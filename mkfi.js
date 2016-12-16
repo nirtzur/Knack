@@ -167,7 +167,7 @@ window.addListeners = function($) {
   function getPre(data) {
     $('.kn-message p')[0].innerHTML= "Getting Pre Property to update"
     new_identifier = data["id"];
-    ajaxCall('GET', 'object_22/records/' + preproperty_id + '?format=raw', updateSubRecords);
+    updateSubRecords();
   }
 
   function createRecord(data) {
@@ -236,6 +236,7 @@ window.addListeners = function($) {
       data["field_507"] = "Other"; // Inspection
       data["field_635"] = 0; // Inspection
       data["field_639"] = rehab_setup_id; // Rehab setup id
+      data["field_799"] = [preproperty_id];
     
       create_budget = false;
       ajaxCall('POST', 'object_18/records', getPre, data);
