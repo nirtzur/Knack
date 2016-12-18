@@ -1,14 +1,22 @@
 var data = {};
-var application_name = "";
-var objects = {};
-var fields = {};
+var map = {
+	object_types: { 
+		"Objects": { "Type": "Object", "Name": [] }, 
+		"Scenes": { "Type": "Scene", "Name": [] } 
+	},
+	objects: {},
+	fields: {}
+}
 
-function getFieldName(key) {
-	var name = fields[key] && fields[key]["name"];
+function getFieldName(key, parent) {
+	var name = map["fields"][key] && map["fields"][key]["Name"];
 	if (typeof name == "undefined") {
 		return key + " not found";
 	}
-	return name;
+	if (parent == map["fields"][key]["Parent"][0][0]) {
+		return name;
+	}
+	return map["fields"][key]["Parent"][0][1] + "." + name;
 }
 
 function euqationFields(format) {
@@ -24,14 +32,14 @@ function euqationFields(format) {
 		if (typeof equation === 'string') {
 		  while (match = regex.exec(equation)) {
 		  	field_key = match[1];
-    		equation_fields.push([field_key, getFieldName(field_key)]);
+    		equation_fields.push([field_key, null, "fields"]);
 		  }
 		} 
 		else {
 			equation.forEach(function(ref) { 
 				if (ref["type"] == "field") {
 					field_key = ref["field"]["key"]
-					equation_fields.push([field_key, getFieldName(field_key)]);
+					equation_fields.push([field_key, null, "fields"]);
 				};
 			});
 		};
@@ -39,37 +47,43 @@ function euqationFields(format) {
 	return equation_fields;
 }
 
-function loadField(field) {
+function loadField(field, object_key, object_name) {
 	var match;
 	var fld = {
-		"id": field["_id"],
-		"key": field["key"],
-		"name": field["name"],
-		"type": field["type"]
+		"Key": field["key"],
+		"Object": "Field",
+		"Name": field["name"],
+		"Type": field["type"],
+		"Parent": [[object_key, object_name, "objects"]]
 	};
-	fld["related_fields"] = euqationFields(field["format"]);
-	fields[field["key"]] = fld;
+	fld["Related Fields"] = euqationFields(field["format"]);
+	map["fields"][field["key"]] = fld;
 }
 
 function locateObjects() {
 	data["application"]["objects"].forEach(function(object) {
+		map["object_types"]["Objects"]["Name"].push( [object["key"], object["name"], "objects"] );
 		var obj = {
-			"id": object["_id"],
-			"key": object["key"],
-			"name": object["name"],
-			"tasks": null,
-			"related_fields": object["fields"].map(function(field) {
-				loadField(field);
-				return [ field["key"], field["name"] ];
+			"Key": object["key"],
+			"Object": "Object",
+			"Name": object["name"],
+			"Tasks": null,
+			"Parent": [["Objects", "Map", "object_types"]],
+			"Related Fields": object["fields"].map(function(field) {
+				loadField(field, object["key"], object["name"]);
+				return [ field["key"], null, "fields" ];
 			})
 		};
-		objects[object["key"]] = obj;
+		map["objects"][object["key"]] = obj;
 	});
 }
 
-function showObject() {
-	var key = this.id;
-	buildTable(fields[key]["related_fields"]);
+function showObject(event) {
+	var key = event.srcElement.id;
+	var type = event.srcElement.getAttribute('type');
+	if (type) {
+		buildTable({ "object": map[type][key] });
+	}
 }
 
 function cleanTable(table) {
@@ -89,24 +103,26 @@ function createHeaders(table, headers) {
 	});
 }
 
-function getLink(field){
+function getLink(field, parent){
 	var span = document.createElement('span');
-	span.innerHTML = field[1] + " ";
-	span.id = field[0];
-	var related_fields = fields[field[0]["related_fields"]];
-	if (related_fields && related_fields.length > 0) {
-		span.addEventListener("click", showObject, false);
+	if (field[1]) {
+		span.innerHTML = field[1] + " ";
 	}
+	else {
+		span.innerHTML = getFieldName(field[0], parent) + " ";
+	}
+	span.id = field[0];
+	span.setAttribute('type', field[2]);
 	return span;
 }
 
-function buildCell(cell, field, key) {
+function buildCell(cell, field, parent) {
 	if (!field || typeof field  === 'string' ) {
 		cell.innerHTML = field;
 	}
 	else {
 		field.forEach(function(related_field){
-			cell.appendChild(getLink(related_field));
+			cell.appendChild(getLink(related_field, parent));
 		});
 	};
 }
@@ -123,15 +139,15 @@ function buildTable(records) {
 		var record = records[record_id];
 		headers.forEach(function(key) {
 			var cell = row.insertCell(-1);
-			buildCell(cell, record[key], key);
+			buildCell(cell, record[key], record["Key"]);
 		});
 	});
+	table.addEventListener("click", showObject, false);
 }
 
-function parseData() {
-	application_name = data["application"]["name"];
+function loadObjectTypes() {
 	locateObjects();
-	buildTable(objects);
+	// locateScenes();
 }
 
 function loadData() {
@@ -139,7 +155,8 @@ function loadData() {
 	xhttp.onreadystatechange = function() {
 	  if (this.readyState == 4 && this.status == 200) {
 			data = JSON.parse(xhttp.response);
-			parseData();
+			loadObjectTypes();
+			buildTable(map["object_types"]);
     }
 	};
 	xhttp.open("GET", "https://api.knackhq.com/v1/applications/55bd08ae1407d36f78c321b6", true);
