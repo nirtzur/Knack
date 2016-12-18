@@ -130,7 +130,7 @@ function buildCell(cell, field, parent) {
 function buildTable(records) {
 	var record_keys = Object.keys(records);
 	var headers = Object.keys(records[record_keys[0]]);
-	var table = document.getElementById("FieldsTable");
+	var table = document.getElementsByClassName('kn-table-table');
 	cleanTable(table);
 	createHeaders(table, headers);
 
