@@ -88,15 +88,21 @@ var LocateKnackFields = (function() {
 	}
 
 	function cleanTable(table) {
+		var new_thead = document.createElement('thead');
+		var old_thead = table.tHead;
+		if (old_thead) {
+			table.replaceChild(new_thead, old_thead);
+		};
+
 		var new_tbody = document.createElement('tbody');
-		var old_tbody = table.getElementsByTagName('tbody')[0];
+		var old_tbody = table.tBodies[0];
 		if (old_tbody) {
 			table.replaceChild(new_tbody, old_tbody);
 		};
 	}
 
 	function createHeaders(table, headers) {
-		var header = table.insertRow(0);
+		var header = table.tHead.insertRow(0);
 
 		headers.forEach(function(key) {
 			var cell = header.insertCell(-1);
@@ -136,7 +142,7 @@ var LocateKnackFields = (function() {
 		createHeaders(table, headers);
 
 		Object.keys(records).forEach(function(record_id) {
-			var row = table.insertRow(-1);
+			var row = table.tBodies[0].insertRow(-1);
 			var record = records[record_id];
 			headers.forEach(function(key) {
 				var cell = row.insertCell(-1);
