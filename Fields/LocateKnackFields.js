@@ -118,13 +118,15 @@ var LocateKnackFields = (function() {
 		var span = document.createElement('span');
 		
 		if (field[1]) {
-			span.innerHTML = field[1] + " ";
+			span.innerHTML = field[1];
 		}
 		else {
-			span.innerHTML = getFieldName(field[0], parent) + " ";
+			span.innerHTML = getFieldName(field[0], parent);
 		}
 		span.id = field[0];
 		span.setAttribute('type', field[2]);
+		span.style.backgroundColor = '#ebebeb';
+		span.style.marginRight = '5px';
 		return span;
 	}
 
