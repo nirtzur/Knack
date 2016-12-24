@@ -17,7 +17,7 @@ var LocateKnackFields = (function() {
 		if (parent == map["fields"][key]["Parent"][0][0]) {
 			return name;
 		}
-		return map["fields"][key]["Parent"][0][1] + "." + name;
+		return map["fields"][key]["Parent"][0][1] + "->" + name;
 	}
 
 	function euqationFields(format) {
@@ -26,7 +26,7 @@ var LocateKnackFields = (function() {
 			return [];
 		}
 
-		var regex = /{(field_\d+)}/g;
+		var regex = /(field_\d+)/g;
 		var equation_fields = [];
 		var field_key = "";
 		if (equation) {
@@ -55,7 +55,8 @@ var LocateKnackFields = (function() {
 			"Object": "Field",
 			"Name": field["name"],
 			"Type": field["type"],
-			"Parent": [[object_key, object_name, "objects"]]
+			"Parent": [[object_key, object_name, "objects"]],
+			"Used By": []
 		};
 		fld["Related Fields"] = euqationFields(field["format"]);
 		map["fields"][field["key"]] = fld;
@@ -159,10 +160,22 @@ var LocateKnackFields = (function() {
 			headers.forEach(function(key) {
 				var cell = row.insertCell(-1);
 				cell.className = 'cell-edit';
-				buildCell(cell, record[key], record["Key"]);
+				buildCell(cell, record[key], record["Object"] == "Field" ? record["Parent"][0][0] : record["Key"]);
 			});
 		});
 		table.addEventListener("click", showObject, false);
+	}
+
+	function locateUsedByFields() {
+		var using_field;
+		Object.keys(map["fields"]).forEach(function(field_id) {
+			map["fields"][field_id]["Related Fields"].forEach(function(related_field) {
+				using_field = map["fields"][related_field[0]];
+				if (using_field) {
+					using_field["Used By"].push([field_id, null, "fields"]);
+				}
+			});
+		});
 	}
 
 	function loadObjectTypes() {
@@ -184,6 +197,7 @@ var LocateKnackFields = (function() {
 		  if (this.readyState == 4 && this.status == 200) {
 				data = JSON.parse(xhttp.response);
 				loadObjectTypes();
+				locateUsedByFields();
 				buildTable(map["object_types"]);
 	    }
 		};
