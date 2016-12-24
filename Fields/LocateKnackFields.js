@@ -127,6 +127,8 @@ var LocateKnackFields = (function() {
 		span.setAttribute('type', field[2]);
 		span.style.backgroundColor = '#ebebeb';
 		span.style.marginRight = '5px';
+		span.style.padding = '2px';
+		span.style.border = '1px solid #bbb';
 		return span;
 	}
 
