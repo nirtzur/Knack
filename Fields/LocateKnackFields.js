@@ -116,6 +116,7 @@ var LocateKnackFields = (function() {
 
 	function getLink(field, parent){
 		var span = document.createElement('span');
+		span.className = 'cell-edit';
 		if (field[1]) {
 			span.innerHTML = field[1] + " ";
 		}
@@ -128,8 +129,10 @@ var LocateKnackFields = (function() {
 	}
 
 	function buildCell(cell, field, parent) {
+		var span = document.createElement('span');
 		if (!field || typeof field  === 'string' ) {
-			cell.innerHTML = field;
+			span.innerHTML = field;
+			cell.appendChild(span);
 		}
 		else {
 			field.forEach(function(related_field){
