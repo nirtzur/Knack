@@ -152,6 +152,14 @@ var LocateKnackFields = (function() {
 	}
 
 	function loadData() {
+		var application_id;
+		if (typeof Knack != 'undefined') {
+			application_id = Knack.application_id;
+		}
+		else {
+			application_id = document.getElementById('application_id').value;
+		}
+
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 		  if (this.readyState == 4 && this.status == 200) {
@@ -160,7 +168,7 @@ var LocateKnackFields = (function() {
 				buildTable(map["object_types"]);
 	    }
 		};
-		xhttp.open("GET", "https://api.knackhq.com/v1/applications/55bd08ae1407d36f78c321b6", true);
+		xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
 		xhttp.send();
 	}
 	
