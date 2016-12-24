@@ -105,8 +105,12 @@ var LocateKnackFields = (function() {
 		var header = table.tHead.insertRow(0);
 
 		headers.forEach(function(key) {
-			var cell = header.insertCell(-1);
-			cell.innerHTML = key;
+			var th = document.createElement('th');
+			var span = document.createElement('span');
+			span.innerHTML = key;
+			span.className = 'table-fixed-label';
+			th.appendChild(span);
+			header.appendChild(th);
 		});
 	}
 
