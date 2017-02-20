@@ -159,10 +159,10 @@ window.addListeners = function($) {
 
   // Calculate field 'Meir' on cashflow report - monthly
     var revised = [];
-    Array.from($('#kn-report-view_474-3 tbody').getElementsByTagName('tr')).forEach(function(_val, index) {
+    Array.from($('#kn-report-view_474-3 tbody tr')).forEach(function(_val, index) {
       revised[index] = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
     });
-    Array.from($('#kn-report-view_474-4 tbody').getElementsByTagName('tr')).forEach(function(_val, index) {
+    Array.from($('#kn-report-view_474-4 tbody tr')).forEach(function(_val, index) {
       var rafi = parseFloat($(this).getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
       var ibds = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
       var meir = (revised[index] - rafi)/2 + ibds;
@@ -171,10 +171,10 @@ window.addListeners = function($) {
 
   // Calculate field 'Meir' on cashflow report - yearly
     var revised = [];
-    Array.from($('#kn-report-view_482-3 tbody').getElementsByTagName('tr')).forEach(function(_val, index) {
+    Array.from($('#kn-report-view_482-3 tbody tr')).forEach(function(_val, index) {
       revised[index] = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
     });
-    Array.from($('#kn-report-view_482-3 tbody').getElementsByTagName('tr')).forEach(function(_val, index) {
+    Array.from($('#kn-report-view_482-3 tbody tr')).forEach(function(_val, index) {
       var rafi = parseFloat($(this).getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
       var ibds = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
       var meir = (revised[index] - rafi)/2 + ibds;
