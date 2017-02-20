@@ -166,7 +166,7 @@ window.addListeners = function($) {
       var rafi = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
       var ibds = parseFloat(val.getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
       var meir = (revised[index] - rafi)/2 + ibds;
-      val.getElementsByTagName('td')[3].innerText = '$' + meir.toString();
+      val.getElementsByTagName('td')[3].innerText = '$' + meir.toFixed(2);
     });
   });
 
