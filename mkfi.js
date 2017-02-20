@@ -153,8 +153,11 @@ window.addListeners = function($) {
     }
   });
 
+  // reduce table sizes in cashflow
+  $(document).on('knack-page-render.scene_260', function(event, page) {
+    $('table.expand-records').css('width', 'inherit');
+
   // Calculate field 'Meir' on cashflow report - monthly
-  $(document).on('knack-view-render.view_474', function(event, view, data) {
     var revised = [];
     $('#kn-report-view_474-3 tr').each(function(_val, index) {
       revised[index] = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
@@ -165,10 +168,8 @@ window.addListeners = function($) {
       var meir = (revised - rafi)/2 + ibds;
       $(this).getElementsByTagName('td')[3].innerText = '$' + meir.to_s;
     });
-  });
 
   // Calculate field 'Meir' on cashflow report - yearly
-  $(document).on('knack-view-render.view_482', function(event, view, data) {
     var revised = [];
     $('#kn-report-view_482-3 tr').each(function(_val, index) {
       revised[index] = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
@@ -179,12 +180,6 @@ window.addListeners = function($) {
       var meir = (revised - rafi)/2 + ibds;
       $(this).getElementsByTagName('td')[3].innerText = '$' + meir.to_s;
     });
-  });
-
-
-  // reduce table sizes in cashflow
-  $(document).on('knack-page-render.scene_260', function(event, page) {
-    $('table.expand-records').css('width', 'inherit');
   });
 
 
