@@ -166,7 +166,7 @@ window.addListeners = function($) {
       var rafi = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
       var ibds = parseFloat(val.getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
       var meir = (revised[index] - rafi)/2 + ibds;
-      val.getElementsByTagName('td')[3].innerText = '$' + meir.to_s;
+      val.getElementsByTagName('td')[3].innerText = '$' + meir.toString();
     });
 
   // Calculate field 'Meir' on cashflow report - yearly
@@ -178,7 +178,7 @@ window.addListeners = function($) {
       var rafi = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
       var ibds = parseFloat(val.getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
       var meir = (revised[index] - rafi)/2 + ibds;
-      val.getElementsByTagName('td')[3].innerText = '$' + meir.to_s;
+      val.getElementsByTagName('td')[3].innerText = '$' + meir.toString();
     });
   });
 
