@@ -157,11 +157,11 @@ window.addListeners = function($) {
   $(document).on('knack-view-render.view_474', function(event, view, data) {
     var revised = [];
     $('#kn-report-view_474-3 tr').each(function(_val, index) {
-      revised[index] = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', '');
+      revised[index] = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
     });
     $('#kn-report-view_474-4 tr').each(function(_val, index) {
-      var rafi = parseFloat($(this).getElementsByTagName('td')[1].innerText.substring(1).replace(',', '');
-      var ibds = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', '');
+      var rafi = parseFloat($(this).getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
+      var ibds = parseFloat($(this).getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
       var meir = (revised - rafi)/2 + ibds;
       $(this).getElementsByTagName('td')[3].innerText = '$' + meir.to_s;
     });
