@@ -162,11 +162,16 @@ window.addListeners = function($) {
     Array.from($('#kn-report-view_474-3 tbody tr')).forEach(function(val, index) {
       revised[index] = parseFloat(val.getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
     });
+
+    var rafi = [];
     Array.from($('#kn-report-view_474-4 tbody tr')).forEach(function(val, index) {
-      var rafi = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
-      var ibds = parseFloat(val.getElementsByTagName('td')[2].innerText.substring(1).replace(',', ''));
-      var meir = (revised[index] - rafi)/2 + ibds;
-      val.getElementsByTagName('td')[3].innerText = '$' + meir.toFixed(2);
+      rafi[index] = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
+    });
+
+    Array.from($('#kn-report-view_474-5 tbody tr')).forEach(function(val, index) {
+      var ibds = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(',', ''));
+      var meir = (revised[index] - rafi[index])/2 + ibds;
+      val.getElementsByTagName('td')[2].innerText = '$' + meir.toFixed(2);
     });
   });
 
