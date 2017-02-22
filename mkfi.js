@@ -287,12 +287,9 @@ window.addListeners = function($) {
 
   // Switch Paints screen based on budget/expense
   $(document).on('knack-page-render.scene_221', function(event, page) {
-      if ($("#view_456-field_579").val() == "Expense") {
+    if ($("#view_456-field_579").val() == "Expense") {
       $('.view_405').css('display', 'none');
-          $('.view_409').css('display', 'none');
-      } 
-    else {
-          $('.view_456').css('display', 'none');
+      $('.view_409').css('display', 'none');
     };
   });
 
