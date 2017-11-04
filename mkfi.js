@@ -187,7 +187,7 @@ window.addListeners = function($) {
       $('div#view_77 li.kn-link-7').css('display', 'none'); //Payoff
     }
 
-    var new_construction = $('#view_99 #kn-input-field_923').innerText;
+    var new_construction = $('#view_99 #kn-input-field_923').first().text().trim();
     if (new_construction == "Yes") {
       $('div#view_77 li.kn-link-1').css('display', 'none'); // Buying
       $('div#view_77 li.kn-link-2').css('display', 'none'); // Rehab
