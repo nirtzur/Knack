@@ -177,15 +177,25 @@ window.addListeners = function($) {
 
 
   // disable payoff link if property status is not 'closed'
+  // control which menu items to show for New Construction properties
   $(document).on('knack-view-render.view_77', function(event, view, data) {
   //  if ($($($("ul.kn-grid-12").children()[9]).children()).children()[0].innerHTML == "Monitoring") {
   //    return;
   //  }
     var status = $('#view_99 select#view_99-field_132').val();
     if (status != "Closed") {
-      $('div#view_77 li.kn-link-6').css('display', 'none');
+      $('div#view_77 li.kn-link-7').css('display', 'none'); //Payoff
+    }
+
+    var new_construction = $('#view_99 #kn-input-field_923').innerText;
+    if (new_construction == "Yes") {
+      $('div#view_77 li.kn-link-1').css('display', 'none'); // Buying
+      $('div#view_77 li.kn-link-2').css('display', 'none'); // Rehab
+      $('div#view_77 li.kn-link-8').css('display', 'none'); // Wireform
     } else {
-      $('div#view_77 li.kn-link-6').css('display', 'block');
+      $('div#view_77 li.kn-link-3').css('display', 'none'); // Buying New
+      $('div#view_77 li.kn-link-10').css('display', 'none'); // Wireform 1
+      $('div#view_77 li.kn-link-11').css('display', 'none'); // Wireform 2
     }
   });
 
