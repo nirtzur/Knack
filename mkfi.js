@@ -184,7 +184,7 @@ window.addListeners = function($) {
   //  }
     var status = $('#view_99 select#view_99-field_132').val();
     if (status != "Closed") {
-      $('div#view_77 li.kn-link-7').css('display', 'none'); //Payoff
+      $('div#view_77 li.kn-link-9').css('display', 'none'); //Payoff
     }
 
     var new_construction = $('#view_99 #kn-input-field_923').first().text().trim();
