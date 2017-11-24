@@ -243,7 +243,7 @@ var LocateKnackFields = (function() {
   }
 
   function analyzeData(object) {
-    Object.keys(object.contains).forEach(function(item_type) {
+    Object.keys(object.contains()).forEach(function(item_type) {
       input[item_type].forEach(function(item) {
         analyzeData(new object.contains[item_type](item, object));
       });
