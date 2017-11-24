@@ -251,7 +251,7 @@ var LocateKnackFields = (function() {
   }
 
   function loadObjectTypes() {
-    analyzeData(new Application(data["application"]);
+    analyzeData(new Application(data["application"]));
 
     // Applications("objects", "fields", Record)
     // locateObjects();
