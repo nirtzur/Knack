@@ -1,140 +1,116 @@
 var LocateKnackFields = (function() {
   var data = {};
-  // var main = { objects: {}, fields: {}, scenes: {}, views: {} }
+  var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {} }
+
 
   class Base {
     constructor(object, parent) {
-      this.key = object["key"];
+      this.input = object;
+      this.key = object["key"] || "Application";
       this.name = object["name"];
       this.type = object["type"];
       this.parent = parent;
-      this.related_to = [];
-      this.used_by = [];
+
+      main[parent][this.key] = this;
+
+      this.related_to = {};
+      this.used_by = {};
     }
 
-    link() { return new Relation(key, name, object_type); }
-    value(header) { return this[header.toLowerCase().replace(" ", "_")]; }
-    contains() { return {} }
+    relate(sub_object) { 
+      this.related_to[sub_object.key] = sub_object;
+      sub_object.used_by[this.key] = this;
+    }
+
+    contains() { return [] }
+
+    create(object, parent) { 
+      switch(parent) {
+        case "objects": return new Record(object, parent);
+        case "fields": return new Field(object, parent);
+        case "scenes": return new Scene(object, parent);
+        case "views": return new View(object, parent);
+      }
+    }
+
+    markLinks() {
+      var object = this;
+      Object.keys(object.related_to).forEach(function(key) {
+        object.related_to[key]["used_by"][object.key] = object;
+      });
+    }
   }
 
   class Application extends Base {
-    contains() { return { objects: Record, scenes: Scene } }
+    contains() { return [ "objects", "scenes" ] }
   }
 
   class Record extends Base {
-    contains() { return { fields: Field, connections: Field } }
+    contains() { return [ "fields" ] }
   }
 
   class Field extends Base {
-    contains() { return {  } }
+    euqationFields() {
+      var format = this.input["format"];
+      var equation = format && format["equation"];
+      if (typeof equation == "undefined" || !equation) {
+        this.related_to = {};
+        return;
+      }
+
+      var regex = /(field_\d+)/g;
+      var equation_fields = {};
+      var field_key = "";
+      var match = [];
+
+      if (typeof equation === 'string') {
+        while (match = regex.exec(equation)) {
+          field_key = match[1];
+          equation_fields[field_key] = main["fields"][field_key] || main["fields"]["not found fields"];
+        }
+      }
+      else {
+        equation.forEach(function(ref) { 
+          if (ref["type"] == "field") {
+            field_key = ref["field"]["key"];
+            equation_fields[field_key] = main["fields"][field_key] || main["fields"]["not found fields"];
+          };
+        });
+      };
+
+      this.related_to = equation_fields;
+    }
   }
   
   class Scene extends Base {
     constructor(object, parent) {
-      super(object);
-      this.slug = slug;
+      super(object, parent);
+      this.slug = object["slug"];
     }
-    contains() { return { views: View } }
+    contains() { return [ "views" ] }
   }
 
-  class Relation {
-    constructor(key, name, parent_type) {
-      this.key = key;
-      this.name = name;
-      this.parent_type = parent_type;
-    }
+  class View extends Base {
+    viewFields() {
+      var regex = /(field_\d+)/g;
+      var fields = {};
+      var field_key = "";
+      var match = [];
 
-    linkText(parent_key) {
-      var name = main[parent_type][key] && main[parent_type][key].name;
-      if (typeof name == "undefined") {
-        return key + " not found in " + parent_type;
+      while (match = regex.exec(JSON.stringify(this.input))) {
+        field_key = match[1];
+        fields[field_key] = main["fields"][field_key] || main["fields"]["not found fields"];
       }
-      if (parent_key == main[parent_type][key].parent.key) {
-        return name;
-      }
-      return main[parent_type][key].parent.name + "->" + name;
+
+      this.related_to = fields;
     }
-  }
-
-  function getLinkText(key, type, parent) {
-    var name = main[type][key] && main[type][key]["Name"];
-    if (typeof name == "undefined") {
-      return key + " not found";
-    }
-    if (parent == main[type][key]["Parent"][0][0]) {
-      return name;
-    }
-    return main[type][key]["Parent"][0][1] + "->" + name;
-  }
-
-  function euqationFields(format) {
-    var equation = format && format["equation"];
-    if (typeof equation == "undefined" || !equation) {
-      return new Relation();
-    }
-
-    var regex = /(field_\d+)/g;
-    var equation_fields = [];
-    var field_key = "";
-    if (equation) {
-      if (typeof equation === 'string') {
-        while (match = regex.exec(equation)) {
-          field_key = match[1];
-          equation_fields.push(new Relation(field_key, null, "fields"));
-        }
-      } 
-      else {
-        equation.forEach(function(ref) { 
-          if (ref["type"] == "field") {
-            field_key = ref["field"]["key"]
-            equation_fields.push(new Relation(field_key, null, "fields"));
-          };
-        });
-      };
-    }
-    return equation_fields;
-  }
-
-  function loadView(view, scene_key, scene_name) {
-    // var match;
-    var view_obj = {
-      "Key": view["key"],
-      "Object": "View",
-      "Name": view["name"],
-      "Label": view["label"],
-      "Type": view["type"],
-      "Parent": [[scene_key, scene_name, "scenes"]]
-      // "Used By": []
-    };
-    // fld["Related Fields"] = euqationFields(field["format"]);
-    main["views"][view["key"]] = view_obj;
-  }
-
-  function loadField(field, parent) {
-    var kfield = new Record(field["key"], field["name"], field["type"], "Field", parent);
-    kfield.related_to = euqationFields(field["format"]);
-    main["fields"][field["key"]] = kfield;
-  }
-
-  function locateObjects() {
-    main["object_types"]["objects"] = new RecordType("Objects", "Items", "Object", null, new Relation("Main"));
-
-    data["application"]["objects"].forEach(function(object) {
-      var kobject = new Record(object["key"], object["name"], "Object", "Object", new Relation("Main"));
-      kobject.related_to = object["fields"].map(function(field) {
-        loadField(field, kobject.link);
-        return new Relation(field["key"], null, "fields");
-      });
-      main["objects"][object["key"]] = kobject;
-      main["object_types"]["objects"].related_to.push(kobject.link);
-    });
   }
 
   function showObject(event) {
     var key = event.srcElement.id;
-    var type = event.srcElement.getAttribute('type');
-    if (type) {
-      buildTable({ "object": main[type][key] });
+    var parent = event.srcElement.getAttribute('parent');
+    if (parent) {
+      buildTable({ "object": main[parent][key] });
     }
   }
 
@@ -165,17 +141,12 @@ var LocateKnackFields = (function() {
     });
   }
 
-  function getLink(field, parent){
+  function getLink(object){
     var span = document.createElement('span');
     
-    if (field[1]) {
-      span.innerHTML = field[1];
-    }
-    else {
-      span.innerHTML = getLinkText(field[0], field[2], parent);
-    }
-    span.id = field[0];
-    span.setAttribute('type', field[2]);
+    span.innerHTML = object.key + " -> " + object.name;
+    span.id = object.key;
+    span.setAttribute('parent', object.parent);
     span.style.backgroundColor = '#ebebeb';
     span.style.margin = '5px';
     span.style.padding = '2px';
@@ -184,22 +155,22 @@ var LocateKnackFields = (function() {
     return span;
   }
 
-  function buildCell(cell, field, parent) {
+  function buildCell(cell, object) {
     var span = document.createElement('span');
-    if (!field || typeof field  === 'string' ) {
-      span.innerHTML = field;
+    if (!object || typeof object  === 'string' ) {
+      span.innerHTML = object;
       cell.appendChild(span);
     }
     else {
-      field.forEach(function(related_field){
-        cell.appendChild(getLink(related_field, parent));
+      Object.keys(object).forEach(function(object_id){
+        cell.appendChild(getLink(object[object_id]));
       });
     };
   }
 
   function buildTable(records) {
     var record_keys = Object.keys(records);
-    var headers = Object.keys(records[record_keys[0]]);
+    var headers = ["key", "used_by", "related_to"];
     var table = document.getElementsByClassName('kn-table-table')[0];
     cleanTable(table);
     createHeaders(table, headers);
@@ -210,52 +181,43 @@ var LocateKnackFields = (function() {
       headers.forEach(function(key) {
         var cell = row.insertCell(-1);
         cell.className = 'cell-edit';
-        buildCell(cell, record[key], record["Object"] == "Field" ? record["Parent"][0][0] : record["Key"]);
+        buildCell(cell, record[key]);
       });
     });
     table.addEventListener("click", showObject, false);
   }
 
   function locateUsedByFields() {
-    var using_field;
-    Object.keys(main["fields"]).forEach(function(field_id) {
-      main["fields"][field_id]["Related Fields"].forEach(function(related_field) {
-        using_field = main["fields"][related_field[0]];
-        if (using_field) {
-          using_field["Used By"].push([field_id, null, "fields"]);
-        }
-      });
+    var field;
+    var view;
+    console.log("processing related fields");
+    Object.keys(main["fields"]).forEach(function(field_key) {
+      field = main["fields"][field_key];
+      field.euqationFields();
+      field.markLinks();
     });
-  }
-
-  function locateScenes() {
-    main["object_types"]["scenes"] = new RecordType("Scenes", "Items", "Scene", null, new Relation("Main"));
-
-    data["application"]["scenes"].forEach(function(scene) {
-      var kscene = new Record(scene["key"], scene["name"], "Scene", "Scene", new Relation("Main"), scene["slug"]);
-      kscene.related_to = scene["views"].map(function(view) {
-        loadView(view, kscene.link);
-        return new Relation(scene["key"], null, "scenes");
-      });
-      main["scenes"][scene["key"]] = kscene;
-      main["object_types"]["scenes"].related_to.push(kscene.link);
+    console.log("processing related views");
+    Object.keys(main["views"]).forEach(function(view_key) {
+      view = main["views"][view_key];
+      view.viewFields();
+      view.markLinks();
     });
   }
 
   function analyzeData(object) {
-    Object.keys(object.contains()).forEach(function(item_type) {
-      input[item_type].forEach(function(item) {
-        analyzeData(new object.contains[item_type](item, object));
+    object.contains().forEach(function(item_type) {
+      object.input[item_type].forEach(function(item) {
+        var sub_object = object.create(item, item_type);
+        object.relate(sub_object);
+        analyzeData(sub_object);
       });
     });
   }
 
   function loadObjectTypes() {
-    analyzeData(new Application(data["application"]));
-
-    // Applications("objects", "fields", Record)
-    // locateObjects();
-    // locateScenes();
+    console.log("analyzing data");
+    analyzeData(new Application(data["application"], "application"));
+    main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application");
   }
 
   function loadData() {
@@ -273,7 +235,7 @@ var LocateKnackFields = (function() {
         data = JSON.parse(xhttp.response);
         loadObjectTypes();
         locateUsedByFields();
-        buildTable(main["object_types"]);
+        buildTable(main["application"]);
       }
     };
     xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + "55bd08ae1407d36f78c321b6", true);
