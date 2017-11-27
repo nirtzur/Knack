@@ -142,28 +142,32 @@ var LocateKnackFields = (function() {
   }
 
   function getLink(object){
-    var span = document.createElement('span');
-    
-    span.innerHTML = object.key + " -> " + object.name;
-    span.id = object.key;
-    span.setAttribute('parent', object.parent);
-    span.style.backgroundColor = '#ebebeb';
-    span.style.margin = '5px';
-    span.style.padding = '2px';
-    span.style.border = '1px solid #bbb';
-    span.style.display = 'inline-block';
-    span.style.width = 'max-content';
-    return span;
+    var li = document.createElement('li');
+
+    li.innerHTML = object.name + "(" + object.key + ")";
+    li.id = object.key;
+    li.setAttribute('parent', object.parent);
+    li.style.textDecoration = "underline";
+    return li;
   }
 
   function buildCell(cell, object) {
-    var span = document.createElement('span');
+    var li = document.createElement('li');
     if (!object || typeof object === 'string') {
-      span.innerHTML = object;
-      cell.appendChild(span);
+      li.innerHTML = object;
+      cell.appendChild(li);
     }
     else {
+      var heading = "";
       Object.keys(object).forEach(function(object_id){
+        if (heading != object[object_id].parent) {
+          var span = document.createElement('span');
+          heading = object[object_id].parent;
+          span.innerHTML = object[object_id].parent;
+          span.style.fontSize = 'x-large';
+          span.style.display = 'block';
+          cell.appendChild(span);
+        }
         cell.appendChild(getLink(object[object_id]));
       });
     };
