@@ -13,12 +13,12 @@ var LocateKnackFields = (function() {
 
       main[parent][this.key] = this;
 
-      this.related_to = {};
+      this.refers_to = {};
       this.used_by = {};
     }
 
     relate(sub_object) { 
-      this.related_to[sub_object.key] = sub_object;
+      this.refers_to[sub_object.key] = sub_object;
       sub_object.used_by[this.key] = this;
     }
 
@@ -35,8 +35,8 @@ var LocateKnackFields = (function() {
 
     markLinks() {
       var object = this;
-      Object.keys(object.related_to).forEach(function(key) {
-        object.related_to[key]["used_by"][object.key] = object;
+      Object.keys(object.refers_to).forEach(function(key) {
+        object.refers_to[key]["used_by"][object.key] = object;
       });
     }
   }
@@ -54,7 +54,7 @@ var LocateKnackFields = (function() {
       var format = this.input["format"];
       var equation = format && format["equation"];
       if (typeof equation == "undefined" || !equation) {
-        this.related_to = {};
+        this.refers_to = {};
         return;
       }
 
@@ -78,7 +78,7 @@ var LocateKnackFields = (function() {
         });
       };
 
-      this.related_to = equation_fields;
+      this.refers_to = equation_fields;
     }
   }
   
@@ -102,7 +102,7 @@ var LocateKnackFields = (function() {
         fields[field_key] = main["fields"][field_key] || main["fields"]["not found fields"];
       }
 
-      this.related_to = fields;
+      this.refers_to = fields;
     }
   }
 
@@ -144,7 +144,7 @@ var LocateKnackFields = (function() {
   function getLink(object){
     var li = document.createElement('li');
 
-    li.innerHTML = object.name + "(" + object.key + ")";
+    li.innerHTML = object.name + " (" + object.key + ")";
     li.id = object.key;
     li.setAttribute('parent', object.parent);
     li.style.textDecoration = "underline";
@@ -165,6 +165,7 @@ var LocateKnackFields = (function() {
           heading = object[object_id].parent;
           span.innerHTML = object[object_id].parent;
           span.style.fontSize = 'x-large';
+          span.style.padding = '10px';
           span.style.display = 'block';
           cell.appendChild(span);
         }
@@ -175,7 +176,7 @@ var LocateKnackFields = (function() {
 
   function buildTable(records) {
     var record_keys = Object.keys(records);
-    var headers = ["key", "name", "used_by", "related_to"];
+    var headers = ["name", "key", "used_by", "refers_to"];
     var table = document.getElementsByClassName('kn-table-table')[0];
     cleanTable(table);
     createHeaders(table, headers);
