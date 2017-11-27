@@ -152,12 +152,13 @@ var LocateKnackFields = (function() {
     span.style.padding = '2px';
     span.style.border = '1px solid #bbb';
     span.style.display = 'inline-block';
+    span.style.width = 'max-content';
     return span;
   }
 
   function buildCell(cell, object) {
     var span = document.createElement('span');
-    if (!object || typeof object  === 'string' ) {
+    if (!object || typeof object === 'string') {
       span.innerHTML = object;
       cell.appendChild(span);
     }
@@ -170,7 +171,7 @@ var LocateKnackFields = (function() {
 
   function buildTable(records) {
     var record_keys = Object.keys(records);
-    var headers = ["key", "used_by", "related_to"];
+    var headers = ["key", "name", "used_by", "related_to"];
     var table = document.getElementsByClassName('kn-table-table')[0];
     cleanTable(table);
     createHeaders(table, headers);
