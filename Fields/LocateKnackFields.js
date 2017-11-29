@@ -1,6 +1,6 @@
 var LocateKnackFields = (function() {
   var data = {};
-  var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {} }
+  var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {} }
 
 
   class Base {
@@ -30,14 +30,23 @@ var LocateKnackFields = (function() {
         case "fields": return new Field(object, parent);
         case "scenes": return new Scene(object, parent);
         case "views": return new View(object, parent);
+        case "tasks": return new Task(object, parent);
       }
     }
 
-    markLinks() {
-      var object = this;
-      Object.keys(object.refers_to).forEach(function(key) {
-        object.refers_to[key]["used_by"][object.key] = object;
-      });
+    usedObjects(data, object_type = "fields") {
+      var regex = (object_type == "fields") ? /(field_\d+)/g : /(object_\d+)/g;
+      var object_key = "";
+      var object;
+      var match = [];
+
+      while (match = regex.exec(JSON.stringify(data))) {
+        object_key = match[1];
+        if (this.key != object_key) {
+          object = main[object_type][object_key] || main["fields"]["not found fields"];
+          this.relate(object);
+        }
+      }
     }
   }
 
@@ -46,40 +55,16 @@ var LocateKnackFields = (function() {
   }
 
   class Record extends Base {
-    contains() { return [ "fields" ] }
+    contains() { return [ "fields", "tasks" ] }
+  }
+
+  class Task extends Base {
+  }
+
+  class Connection extends Base {
   }
 
   class Field extends Base {
-    euqationFields() {
-      var format = this.input["format"];
-      var equation = format && format["equation"];
-      if (typeof equation == "undefined" || !equation) {
-        this.refers_to = {};
-        return;
-      }
-
-      var regex = /(field_\d+)/g;
-      var equation_fields = {};
-      var field_key = "";
-      var match = [];
-
-      if (typeof equation === 'string') {
-        while (match = regex.exec(equation)) {
-          field_key = match[1];
-          equation_fields[field_key] = main["fields"][field_key] || main["fields"]["not found fields"];
-        }
-      }
-      else {
-        equation.forEach(function(ref) { 
-          if (ref["type"] == "field") {
-            field_key = ref["field"]["key"];
-            equation_fields[field_key] = main["fields"][field_key] || main["fields"]["not found fields"];
-          };
-        });
-      };
-
-      this.refers_to = equation_fields;
-    }
   }
   
   class Scene extends Base {
@@ -91,19 +76,6 @@ var LocateKnackFields = (function() {
   }
 
   class View extends Base {
-    viewFields() {
-      var regex = /(field_\d+)/g;
-      var fields = {};
-      var field_key = "";
-      var match = [];
-
-      while (match = regex.exec(JSON.stringify(this.input))) {
-        field_key = match[1];
-        fields[field_key] = main["fields"][field_key] || main["fields"]["not found fields"];
-      }
-
-      this.refers_to = fields;
-    }
   }
 
   function showObject(event) {
@@ -194,25 +166,26 @@ var LocateKnackFields = (function() {
   }
 
   function locateUsedByFields() {
-    var field;
-    var view;
-    console.log("processing related fields");
-    Object.keys(main["fields"]).forEach(function(field_key) {
-      field = main["fields"][field_key];
-      field.euqationFields();
-      field.markLinks();
+    var object;
+    ["fields", "views", "tasks"].forEach(function(item) {
+      console.log("processing related " + item);
+      Object.keys(main[item]).forEach(function(key) {
+        object = main[item][key];
+        object.usedObjects(object["input"]);
+      });
     });
-    console.log("processing related views");
-    Object.keys(main["views"]).forEach(function(view_key) {
-      view = main["views"][view_key];
-      view.viewFields();
-      view.markLinks();
+
+    Object.keys(main["objects"]).forEach(function(key) {
+      object = main["objects"][key];
+      object.usedObjects(object["input"]["connections"]["inbound"], "objects");
     });
   }
 
   function analyzeData(object) {
     object.contains().forEach(function(item_type) {
+      console.log("analyzing " + item_type);
       object.input[item_type].forEach(function(item) {
+        console.log("analyzing " + item.key);
         var sub_object = object.create(item, item_type);
         object.relate(sub_object);
         analyzeData(sub_object);
