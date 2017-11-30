@@ -200,13 +200,9 @@ var LocateKnackFields = (function() {
   }
 
   function loadData() {
+    Knack.showSpinner();
     var application_id;
-    if (typeof Knack != 'undefined') {
-      application_id = Knack.application_id;
-    }
-    else {
-      application_id = document.getElementById('application_id').value;
-    }
+    application_id = $('td.field_1').innerText;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -215,9 +211,10 @@ var LocateKnackFields = (function() {
         loadObjectTypes();
         locateUsedByFields();
         buildTable(main["application"]);
+        Knack.hideSpinner();
       }
     };
-    xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + "55bd08ae1407d36f78c321b6", true);
+    xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
     xhttp.send();
   }
   
