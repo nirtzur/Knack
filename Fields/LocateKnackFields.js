@@ -202,7 +202,7 @@ var LocateKnackFields = (function() {
   function loadData() {
     Knack.showSpinner();
     var application_id;
-    application_id = $('td.field_1').innerText;
+    application_id = document.getElementsByClassName('field_1 cell-edit')[0].innerText;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
