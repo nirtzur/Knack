@@ -168,7 +168,6 @@ var LocateKnackFields = (function() {
   function locateUsedByFields() {
     var object;
     ["fields", "views", "tasks"].forEach(function(item) {
-      console.log("processing related " + item);
       Object.keys(main[item]).forEach(function(key) {
         object = main[item][key];
         object.usedObjects(object["input"]);
@@ -183,9 +182,7 @@ var LocateKnackFields = (function() {
 
   function analyzeData(object) {
     object.contains().forEach(function(item_type) {
-      console.log("analyzing " + item_type);
       object.input[item_type].forEach(function(item) {
-        console.log("analyzing " + item.key);
         var sub_object = object.create(item, item_type);
         object.relate(sub_object);
         analyzeData(sub_object);
@@ -194,15 +191,12 @@ var LocateKnackFields = (function() {
   }
 
   function loadObjectTypes() {
-    console.log("analyzing data");
     analyzeData(new Application(data["application"], "application"));
     main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application");
   }
 
   function loadData() {
-    Knack.showSpinner();
     var application_id;
-    application_id = document.getElementsByClassName('kn-value')[0].innerText;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -214,6 +208,8 @@ var LocateKnackFields = (function() {
         Knack.hideSpinner();
       }
     };
+    Knack.showSpinner();
+    application_id = document.getElementsByClassName('kn-value')[0].innerText;
     xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
     xhttp.send();
   }
