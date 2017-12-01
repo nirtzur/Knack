@@ -78,6 +78,14 @@ var LocateKnackFields = (function() {
   class View extends Base {
   }
 
+  function order(a,b) {
+    if (a.parent < b.parent) { return -1; }
+    if (a.parent > b.parent) { return 1; }
+    if (a.name < b.name) { return -1; }
+    if (a.name > b.name) { return 1; }
+    return 0;
+  }
+
   function showObject(event) {
     var key = event.srcElement.id;
     var parent = event.srcElement.getAttribute('parent');
@@ -131,17 +139,21 @@ var LocateKnackFields = (function() {
     }
     else {
       var heading = "";
-      Object.keys(object).forEach(function(object_id){
-        if (heading != object[object_id].parent) {
+      var sorted_objects = [];
+      var temp = [];
+      Object.keys(object).forEach(function(key) { temp.push(object[key]) });
+      sorted_objects = temp.sort(order);
+      sorted_objects.forEach(function(item){
+        if (heading != item.parent) {
           var span = document.createElement('span');
-          heading = object[object_id].parent;
-          span.innerHTML = object[object_id].parent;
+          heading = item.parent;
+          span.innerHTML = item.parent;
           span.style.fontSize = 'x-large';
           span.style.padding = '10px';
           span.style.display = 'block';
           cell.appendChild(span);
         }
-        cell.appendChild(getLink(object[object_id]));
+        cell.appendChild(getLink(item));
       });
     };
   }
