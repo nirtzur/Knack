@@ -1,15 +1,20 @@
+// Licnese
+// This code belongs to Nir Tzur
+// Usage of this code is restricted to execute through find.knack.com only.
+
 var LocateKnackFields = (function() {
   var data = {};
   var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {} }
 
 
   class Base {
-    constructor(object, parent) {
+    constructor(object, parent, origin = null) {
       this.input = object;
       this.key = object["key"] || "Application";
       this.name = object["name"];
       this.type = object["type"];
       this.parent = parent;
+      if (origin) { this.origin = origin; }
 
       main[parent][this.key] = this;
 
@@ -26,11 +31,11 @@ var LocateKnackFields = (function() {
 
     create(object, parent) { 
       switch(parent) {
-        case "objects": return new Record(object, parent);
-        case "fields": return new Field(object, parent);
-        case "scenes": return new Scene(object, parent);
-        case "views": return new View(object, parent);
-        case "tasks": return new Task(object, parent);
+        case "objects": return new Record(object, parent, this);
+        case "fields": return new Field(object, parent, this);
+        case "scenes": return new Scene(object, parent, this);
+        case "views": return new View(object, parent, this);
+        case "tasks": return new Task(object, parent, this);
       }
     }
 
@@ -48,23 +53,32 @@ var LocateKnackFields = (function() {
         }
       }
     }
+
+    builderLink() {
+      return "https://builder.knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + "#"
+    }
   }
 
   class Application extends Base {
+    constructor(object, parent) {
+      super(object, parent);
+      this.slug = object["slug"];
+      this.account_name = object["account"]["slug"];
+    }
     contains() { return [ "objects", "scenes" ] }
   }
 
   class Record extends Base {
     contains() { return [ "fields", "tasks" ] }
+    builderLink() { return super.builderLink() + "data/" + this.key; }
   }
 
   class Task extends Base {
-  }
-
-  class Connection extends Base {
+    builderLink() { return super.builderLink() + "data/" + this.origin.key + "/tasks/" + this.key; }
   }
 
   class Field extends Base {
+    builderLink() { return super.builderLink() + "data/" + this.origin.key + "/fields/" + this.key; }
   }
   
   class Scene extends Base {
@@ -73,9 +87,11 @@ var LocateKnackFields = (function() {
       this.slug = object["slug"];
     }
     contains() { return [ "views" ] }
+    builderLink() { return super.builderLink() + "pages/" + this.key; }
   }
 
   class View extends Base {
+    builderLink() { return super.builderLink() + "pages/" + this.origin.key + "/views/" + this.key; }
   }
 
   function order(a,b) {
@@ -121,19 +137,40 @@ var LocateKnackFields = (function() {
     });
   }
 
-  function getLink(object){
+  function getLink(object) {
     var li = document.createElement('li');
+    var span = document.createElement('span');
+    var link = document.createElement('a');
 
-    li.innerHTML = object.name + " (" + object.key + ")";
-    li.id = object.key;
-    li.setAttribute('parent', object.parent);
-    li.style.textDecoration = "underline";
+    span.innerHTML = object.name;
+    span.id = object.key;
+    span.setAttribute('parent', object.parent);
+    span.style.textDecoration = "underline";
+
+    link.innerHTML = "(" + object.key + ")";
+    link.id = object.key;
+    link.href = object.builderLink();
+    link.target = "_newtab";
+    link.style.marginLeft = '10px';
+
+    li.appendChild(span);
+    li.appendChild(link);
+
     return li;
   }
 
+  function objectHeader(item) {
+    var span = document.createElement('span');
+    span.innerHTML = item.parent;
+    span.style.fontSize = 'x-large';
+    span.style.padding = '10px';
+    span.style.display = 'block';
+    return span;
+  }
+
   function buildCell(cell, object) {
-    var li = document.createElement('li');
     if (!object || typeof object === 'string') {
+      var li = document.createElement('li');
       li.innerHTML = object;
       cell.appendChild(li);
     }
@@ -145,13 +182,8 @@ var LocateKnackFields = (function() {
       sorted_objects = temp.sort(order);
       sorted_objects.forEach(function(item){
         if (heading != item.parent) {
-          var span = document.createElement('span');
+          cell.appendChild(objectHeader(item));
           heading = item.parent;
-          span.innerHTML = item.parent;
-          span.style.fontSize = 'x-large';
-          span.style.padding = '10px';
-          span.style.display = 'block';
-          cell.appendChild(span);
         }
         cell.appendChild(getLink(item));
       });
