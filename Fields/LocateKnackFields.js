@@ -244,13 +244,18 @@ var LocateKnackFields = (function() {
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        data = JSON.parse(xhttp.response);
-        loadObjectTypes();
-        locateUsedByFields();
-        buildTable(main["application"]);
-        Knack.hideSpinner();
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          data = JSON.parse(xhttp.response);
+          loadObjectTypes();
+          locateUsedByFields();
+          buildTable(main["application"]);
+        }
+        else {
+          document.getElementsByClassName('kn-td-nodata')[0].innerText = "Invalid Application ID";
+        }
       }
+      Knack.hideSpinner();
     };
     Knack.showSpinner();
     application_id = document.getElementsByClassName('kn-value')[0].innerText;
