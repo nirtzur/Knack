@@ -278,9 +278,7 @@ var LocateKnackFields = (function() {
         if (this.status == 200) {
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
-          if (typeof document.getElementsByTagName('h3')[0] != "undefined") {
-            searchFields();
-          }
+          searchFields();
           locateUsedByFields();
           buildTable(main["application"]);
         }
