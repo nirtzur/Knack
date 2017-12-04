@@ -266,7 +266,6 @@ var LocateKnackFields = (function() {
     });
     selector.on('selectr.select', function(option) {
       buildTable({ "object": main["fields"][option["value"]] });
-      selector.reset();
     });
   }
 
