@@ -279,7 +279,7 @@ var LocateKnackFields = (function() {
         if (this.status == 200) {
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
-          searchFields();
+          // searchFields();
           locateUsedByFields();
           buildTable(main["application"]);
         }
