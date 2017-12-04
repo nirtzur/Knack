@@ -247,7 +247,7 @@ var LocateKnackFields = (function() {
     sorted_objects = temp.sort(order);
 
     sorted_objects.forEach(function(field) {
-      data.push({ value: field.key, text: field.name + " " + field.key });
+      data.push({ value: field.key, text: field.name + " (" + field.key + ")" });
     });
     return data;
   }
