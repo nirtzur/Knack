@@ -239,6 +239,37 @@ var LocateKnackFields = (function() {
     main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application");
   }
 
+  function searchdata() {
+    var data = [];
+    var sorted_objects = [];
+    var temp = [];
+    Object.keys(main["fields"]).forEach(function(key) { temp.push(main["fields"][key]) });
+    sorted_objects = temp.sort(order);
+
+    sorted_objects.forEach(function(field) {
+      data.push({ value: field.key, text: field.name + " " + field.key });
+    });
+    return data;
+  }
+
+  function searchFields() {
+    var select = document.createElement('select');
+    select.id = "selectFields";
+    select.style.width = '300px';
+    document.getElementsByClassName('kn-details-column').last().appendChild(select);
+    var selector = new Selectr('#selectFields', {
+      searchable: true, 
+      width: 300, 
+      data: searchdata(), 
+      defaultSelected: false,
+      placeholder: "Search fields"
+    });
+    selector.on('selectr.select', function(option) {
+      selector.clear();
+      buildTable({ "object": main["fields"][option] });
+    });
+  }
+
   function loadData() {
     var application_id;
 
@@ -248,6 +279,7 @@ var LocateKnackFields = (function() {
         if (this.status == 200) {
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
+          searchFields();
           locateUsedByFields();
           buildTable(main["application"]);
         }
