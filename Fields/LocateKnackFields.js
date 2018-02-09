@@ -103,8 +103,9 @@ var LocateKnackFields = (function() {
   }
 
   function showObject(event) {
-    var key = event.srcElement.id;
-    var parent = event.srcElement.getAttribute('parent');
+    var source = event.srcElement || event.target;
+    var key = source.id;
+    var parent = source.getAttribute('parent');
     if (parent) {
       buildTable({ "object": main[parent][key] });
     }
