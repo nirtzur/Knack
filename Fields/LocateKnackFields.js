@@ -289,7 +289,7 @@ var LocateKnackFields = (function() {
       Knack.hideSpinner();
     };
     Knack.showSpinner();
-    application_id = document.getElementsByClassName('kn-value')[0].innerText;
+    application_id = document.getElementsByClassName('kn-detail-body')[0].innerText;
     xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
     xhttp.send();
   }
