@@ -270,11 +270,6 @@ window.addListeners = function($) {
     }, 200);
   });
 
-  // Hide Edit Rehab Setup button so the link is not available, but the edit screen continues to exist
-  $(document).on('knack-view-render.view_442', function(event, view, data) {
-    $('.field_643').css('display', 'none');
-  });
-
 
   // Switch Paints screen based on budget/expense
   $(document).on('knack-page-render.scene_221', function(event, page) {
