@@ -22,7 +22,6 @@ window.addListeners = function($) {
   var preproperty_id;
   var current_budget;
   var create_budget;
-  var rehab_setup_id;
 
   function duplicate_subs(response, obj, fld) {
     for (var rec in response["records"]) {
@@ -72,20 +71,6 @@ window.addListeners = function($) {
   function getMyData(view) {
     $('.kn-message p')[0].innerHTML = "Coping record";
     ajaxCall('GET', 'object_18/records/' + current_budget + '?format=raw', createRecord);
-  }
-
-  function updateMaxSetup(data) {
-    ajaxCall('PUT', 'object_27/records/57953902ec4d42c8487f583e', null, {"field_674": data["id"]});
-    window.location.href = "https://mkfiprecision.knack.com/database#rehab-setup/edit-rehab-setup/" + data["id"];
-  }
-
-  function createSetup(response) {
-    ajaxCall('POST', 'object_26/records', updateMaxSetup, response["records"][0]);
-  }
-
-
-  function getLastSetup(view) {
-    ajaxCall('GET', 'object_26/records/' + '?format=raw&sort_field=field_638&sort_order=desc&rows_per_page=1', createSetup);
   }
 
   // set restriction and last action indication color on full row
@@ -267,7 +252,6 @@ window.addListeners = function($) {
       data["field_431"] = 0; // Management Fee
       data["field_507"] = "Other"; // Inspection
       data["field_635"] = 0; // Inspection
-      data["field_639"] = rehab_setup_id; // Rehab setup id
       data["field_799"] = [preproperty_id];
     
       create_budget = false;
@@ -280,7 +264,6 @@ window.addListeners = function($) {
   $(document).on('knack-view-render.view_431', function(event, view, data) {
     $('#view_431').css('display', 'none');
     setTimeout(function() {
-      rehab_setup_id = data["field_639_raw"][0];
       if (data["field_801"] > 1) {
         $('#view_512').css('display', 'none');
       }
@@ -290,15 +273,6 @@ window.addListeners = function($) {
   // Hide Edit Rehab Setup button so the link is not available, but the edit screen continues to exist
   $(document).on('knack-view-render.view_442', function(event, view, data) {
     $('.field_643').css('display', 'none');
-  });
-
-
-  // Duplicate last setup record
-  $(document).on('knack-view-render.view_446', function (event, view, data) {
-    $('#view_446 input[type=submit]').on("click", function(e) {
-    getLastSetup(view);
-      return false;
-    });
   });
 
 
