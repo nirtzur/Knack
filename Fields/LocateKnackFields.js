@@ -290,9 +290,15 @@ var LocateKnackFields = (function() {
       Knack.hideSpinner();
     };
     Knack.showSpinner();
-    application_id = document.getElementsByClassName('kn-detail-body')[0].innerText;
-    xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
-    xhttp.send();
+    var application_tag = document.getElementsByClassName('kn-detail-body')[0];
+    if (typeof application_tag == "undefined") {
+      document.getElementsByClassName('kn-td-nodata')[0].innerText = "Cannot get Application ID, reload page";
+    }
+    else {
+      application_id = application_tag.innerText;
+      xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
+      xhttp.send();
+    }
   }
   
   return {
