@@ -257,7 +257,7 @@ var LocateKnackFields = (function() {
     var select = document.createElement('select');
     select.id = "selectFields";
     select.style.width = '300px';
-    document.getElementsByClassName('kn-details-column')[1].appendChild(select);
+    document.getElementsByClassName('kn-details-column')[0].appendChild(select);
     var selector = new Selectr('#selectFields', {
       searchable: true, 
       width: 300, 
