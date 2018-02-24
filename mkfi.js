@@ -158,6 +158,23 @@ window.addListeners = function($) {
       var meir = (revised[index] - rafi[index])/2 + ibds;
       val.getElementsByTagName('td')[2].innerText = '$' + meir.toFixed(2);
     });
+
+  // Calculate field 'Meir' on cashflow report - monthly - repeat for new cashflow
+    var revised = [];
+    Array.from($('#kn-report-view_474-6 tbody tr')).forEach(function(val, index) {
+      revised[index] = parseFloat(val.getElementsByTagName('td')[2].innerText.substring(1).replace(/,/g, ''));
+    });
+
+    var rafi = [];
+    Array.from($('#kn-report-view_474-7 tbody tr')).forEach(function(val, index) {
+      rafi[index] = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(/,/g, ''));
+    });
+
+    Array.from($('#kn-report-view_474-8 tbody tr')).forEach(function(val, index) {
+      var ibds = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(/,/g, ''));
+      var meir = (revised[index] - rafi[index])/2 + ibds;
+      val.getElementsByTagName('td')[2].innerText = '$' + meir.toFixed(2);
+    });
   });
 
 
