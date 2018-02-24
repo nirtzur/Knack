@@ -270,8 +270,7 @@ var LocateKnackFields = (function() {
     });
   }
 
-  function loadData() {
-    var application_id;
+  function loadData(application_id) {
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -289,21 +288,9 @@ var LocateKnackFields = (function() {
       }
       Knack.hideSpinner();
     };
-
-    if (typeof document.getElementsByClassName('kn-login view_5')[0] == "undefined") {
-      return;
-    }
-
     Knack.showSpinner();
-    var application_tag = document.getElementsByClassName('kn-detail-body')[0];
-    if (typeof application_tag == "undefined") {
-      document.getElementsByClassName('kn-td-nodata')[0].innerText = "Cannot get Application ID, reload page";
-    }
-    else {
-      application_id = application_tag.innerText;
-      xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
-      xhttp.send();
-    }
+    xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
+    xhttp.send();
   }
   
   return {
