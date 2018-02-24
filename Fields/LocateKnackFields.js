@@ -289,6 +289,11 @@ var LocateKnackFields = (function() {
       }
       Knack.hideSpinner();
     };
+
+    if (typeof document.getElementsByClassName('kn-login view_5')[0] == "undefined") {
+      return;
+    }
+
     Knack.showSpinner();
     var application_tag = document.getElementsByClassName('kn-detail-body')[0];
     if (typeof application_tag == "undefined") {
