@@ -147,12 +147,14 @@ var LocateKnackFields = (function() {
     span.id = object.key;
     span.setAttribute('parent', object.parent);
     span.style.textDecoration = "underline";
+    span.title = "Find references to " + object.name;
 
     link.innerHTML = "(" + object.key + ")";
     link.id = object.key;
     link.href = object.builderLink();
     link.target = "_newtab";
     link.style.marginLeft = '10px';
+    link.title = "Locate " + object.name + " definition in builder";
 
     li.appendChild(span);
     li.appendChild(link);
