@@ -138,15 +138,15 @@ var LocateKnackFields = (function() {
     });
   }
 
-  function getLink(object) {
+  function getLink(object, record) {
     var li = document.createElement('li');
     var span = document.createElement('span');
     var link = document.createElement('a');
 
-    span.innerHTML = object.name;
+    var name = (["fields", "tasks", "views"].indexOf(object.parent) > -1 && record.name != object.origin.name) ? " (" + object.origin.name + ")" : "";
+    span.innerHTML = object.name + name;
     span.id = object.key;
     span.setAttribute('parent', object.parent);
-    span.style.textDecoration = "underline";
     span.title = "Find references to " + object.name;
 
     link.innerHTML = "(" + object.key + ")";
@@ -154,6 +154,7 @@ var LocateKnackFields = (function() {
     link.href = object.builderLink();
     link.target = "_newtab";
     link.style.marginLeft = '10px';
+    link.style.textDecoration = 'none';
     link.title = "Locate " + object.name + " definition in builder";
 
     li.style.listStylePosition = "inside";
@@ -172,7 +173,8 @@ var LocateKnackFields = (function() {
     return span;
   }
 
-  function buildCell(cell, object) {
+  function buildCell(cell, record, key) {
+    var object = record[key];
     if (!object || typeof object === 'string') {
       var li = document.createElement('li');
       li.style.listStylePosition = "inside";
@@ -190,7 +192,7 @@ var LocateKnackFields = (function() {
           cell.appendChild(objectHeader(item));
           heading = item.parent;
         }
-        cell.appendChild(getLink(item));
+        cell.appendChild(getLink(item, record));
       });
     };
   }
@@ -208,7 +210,7 @@ var LocateKnackFields = (function() {
       headers.forEach(function(key) {
         var cell = row.insertCell(-1);
         cell.className = 'cell-edit';
-        buildCell(cell, record[key]);
+        buildCell(cell, record, key);
       });
     });
     table.addEventListener("click", showObject, false);
