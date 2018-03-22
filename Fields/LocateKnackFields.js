@@ -156,6 +156,7 @@ var LocateKnackFields = (function() {
     link.style.marginLeft = '10px';
     link.title = "Locate " + object.name + " definition in builder";
 
+    li.listStylePosition = "inside";
     li.appendChild(span);
     li.appendChild(link);
 
