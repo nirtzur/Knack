@@ -175,6 +175,7 @@ var LocateKnackFields = (function() {
   function buildCell(cell, object) {
     if (!object || typeof object === 'string') {
       var li = document.createElement('li');
+      li.style.listStylePosition = "inside";
       li.innerHTML = object;
       cell.appendChild(li);
     }
