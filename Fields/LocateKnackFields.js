@@ -149,18 +149,14 @@ var LocateKnackFields = (function() {
     linkToObject.id = object.key;
     linkToObject.setAttribute('parent', object.parent);
     linkToObject.href = object.name;
-    linkToObject.style.textDecoration = 'none';
     linkToObject.title = "Find references to " + object.name;
 
     linkToBuilder.innerHTML = "(" + object.key + ")";
     linkToBuilder.id = object.key;
     linkToBuilder.href = object.builderLink();
     linkToBuilder.target = "_newtab";
-    linkToBuilder.style.marginLeft = '10px';
-    linkToBuilder.style.textDecoration = 'none';
     linkToBuilder.title = "Locate " + object.name + " definition in builder";
 
-    li.style.listStylePosition = "inside";
     li.appendChild(linkToObject);
     li.appendChild(linkToBuilder);
 
@@ -170,9 +166,6 @@ var LocateKnackFields = (function() {
   function objectHeader(item) {
     var span = document.createElement('span');
     span.innerHTML = item.parent;
-    span.style.fontSize = 'x-large';
-    span.style.padding = '10px';
-    span.style.display = 'block';
     return span;
   }
 
@@ -180,7 +173,6 @@ var LocateKnackFields = (function() {
     var object = record[key];
     if (!object || typeof object === 'string') {
       var li = document.createElement('li');
-      li.style.listStylePosition = "inside";
       li.innerHTML = object;
       cell.appendChild(li);
     }
