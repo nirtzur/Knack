@@ -107,6 +107,7 @@ var LocateKnackFields = (function() {
     var key = source.id;
     var parent = source.getAttribute('parent');
     if (parent) {
+      event.preventDefault();
       buildTable({ "object": main[parent][key] });
     }
   }
@@ -140,26 +141,28 @@ var LocateKnackFields = (function() {
 
   function getLink(object, record) {
     var li = document.createElement('li');
-    var span = document.createElement('span');
-    var link = document.createElement('a');
+    var linkToObject = document.createElement('a');
+    var linkToBuilder = document.createElement('a');
 
     var name = (["fields", "tasks", "views"].indexOf(object.parent) > -1 && record.name != object.origin.name) ? " (" + object.origin.name + ")" : "";
-    span.innerHTML = object.name + name;
-    span.id = object.key;
-    span.setAttribute('parent', object.parent);
-    span.title = "Find references to " + object.name;
+    linkToObject.innerHTML = object.name + name;
+    linkToObject.id = object.key;
+    linkToObject.setAttribute('parent', object.parent);
+    linkToObject.href = object.name;
+    linkToObject.style.textDecoration = 'none';
+    linkToObject.title = "Find references to " + object.name;
 
-    link.innerHTML = "(" + object.key + ")";
-    link.id = object.key;
-    link.href = object.builderLink();
-    link.target = "_newtab";
-    link.style.marginLeft = '10px';
-    link.style.textDecoration = 'none';
-    link.title = "Locate " + object.name + " definition in builder";
+    linkToBuilder.innerHTML = "(" + object.key + ")";
+    linkToBuilder.id = object.key;
+    linkToBuilder.href = object.builderLink();
+    linkToBuilder.target = "_newtab";
+    linkToBuilder.style.marginLeft = '10px';
+    linkToBuilder.style.textDecoration = 'none';
+    linkToBuilder.title = "Locate " + object.name + " definition in builder";
 
     li.style.listStylePosition = "inside";
-    li.appendChild(span);
-    li.appendChild(link);
+    li.appendChild(linkToObject);
+    li.appendChild(linkToBuilder);
 
     return li;
   }
