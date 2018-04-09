@@ -5,7 +5,8 @@
 var LocateKnackFields = (function() {
   var data = {};
   var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {} }
-
+  var elements = links = [];
+  var graphScale = 1;
 
   class Base {
     constructor(object, parent, origin = null) {
@@ -273,7 +274,7 @@ var LocateKnackFields = (function() {
     });
   }
 
-  function loadData(application_id) {
+  function loadData(application_id, visual) {
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -281,9 +282,15 @@ var LocateKnackFields = (function() {
         if (this.status == 200) {
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
-          searchFields();
           locateUsedByFields();
-          buildTable(main["application"]);
+          if (visual == "graph") {
+            mapData();
+          }
+          else
+          {
+            searchFields();
+            buildTable(main["application"]);
+          }
         }
         else {
           document.getElementsByClassName('kn-td-nodata')[0].innerText = "Invalid Application ID";
@@ -295,6 +302,111 @@ var LocateKnackFields = (function() {
     xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
     xhttp.send();
   }
+
+  function mapData(application_id) {
+    var Shape = joint.dia.Element.define('demo.Shape', 
+      {
+        attrs: {
+          rect: { refWidth: '100%', refHeight: '100%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10 },
+          text: { refX: '50%', refY: '50%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 15 }
+        }
+      }, 
+      {
+        markup: '<rect/><text/>',
+        setText: function(text) { return this.attr('text/text', text || ''); },
+        setColor: function(text) {
+          color = function(text) {
+            switch(text) {
+              case "objects": return "orange";
+              case "fields": return "lightblue";
+              case "scenes": return "green";
+              case "views": return "lightgreen";
+              case "tasks": return "yellow";
+              default: return "pink";
+            }
+          }
+
+          return this.attr('rect/fill', color(text));
+        },
+        setWidth: function(text) {
+          var len = Math.max.apply(null, text.split("\n").map(function(txt) {return 6 + txt.length }));
+          return this.size(len * 9, 80);
+        }
+      }
+    );
+
+    var Link = joint.dia.Link.define('demo.Link',
+      {
+        attrs: { '.connection': { stroke: 'gray', strokeWidth: 2, pointerEvents: 'none' } },
+        connector: { name: 'rounded' }, 
+        z: -1, minLen: 1
+      },
+      {
+        markup: '<path class="connection"/><g class="labels"/>',
+        connect: function(sourceId, targetId) {
+          return this.set({ source: { id: sourceId }, target: { id: targetId } });
+        },
+      }
+    );
+    
+    function capFirst(string) { return string.charAt(0).toUpperCase() + string.slice(1); }
+
+    function addElement(object, x = 0, y = 0) {
+      var shapeText = capFirst(object.key.split('_')[0]) + ": " + object.name + "\n key: " + object.key;
+      if (["fields", "tasks", "views"].indexOf(object.parent) > -1 ) {
+        shapeText = shapeText + "\n defined in: " + capFirst(object.origin.key.split('_')[0]) + " " + object.origin.name
+      }
+      var shape = new Shape({ id: object.key }).setText(shapeText).setWidth(shapeText).setColor(object.parent);
+      shape.set("parent_object", object.parent);
+      elements.push(shape);
+    }
+
+    function createAdjancyList(object) {
+      addElement(object);
+      Object.keys(object.used_by).forEach(function(used_by) {
+        addElement(object.used_by[used_by]);
+        links.push( new Link().connect(used_by, object.key) );
+      });
+      Object.keys(object.refers_to).forEach(function(refers_to) {
+        addElement(object.refers_to[refers_to]);
+        links.push( new Link().connect(object.key, refers_to) );
+      });
+    }
+
+    function drawGraph(object, paper) {
+      elements = links = [];
+      createAdjancyList(object);
+      graph.clear();
+      graph.addCells(elements.concat(links));
+      joint.layout.DirectedGraph.layout(graph, { nodeSep: 50, edgeSep: 80, rankDir: "TB", ranker: 'longest-path'});
+      paper.translate(0, 0);
+    }
+
+    var graph = new joint.dia.Graph;
+  
+    var paper = new joint.dia.Paper({ el: $('#paper'), width: 1200, height: 600, model: graph, gridSize: 1, drawGrid: true });
+
+    paper.on('cell:pointerclick', function(cellView, evt, x, y) { 
+      drawGraph(main[cellView.model.attributes.parent_object][cellView.model.id], paper);
+    });
+
+    paper.on('blank:pointerdown', function(event, x, y) {
+      var scale = V(paper.viewport).scale();
+      dragStartPosition = { x: x * scale.sx, y: y * scale.sy};
+    });
+    paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) { delete dragStartPosition; });
+    $("#diagram").mousemove(function(event) {
+      if (typeof dragStartPosition != 'undefined') {
+        paper.translate(event.offsetX - dragStartPosition.x, event.offsetY - dragStartPosition.y);
+      }
+    });
+
+    $("#plus").on("click", function() { graphScale += 0.05; paper.scale(graphScale); });
+    $("#minus").on("click", function() { graphScale -= 0.05; paper.scale(graphScale); });
+    $("#reset").on("click", function() { graphScale = 1; paper.scale(graphScale); });
+
+    drawGraph(main["application"]["Application"], paper);
+  };
   
   return {
     loadData: loadData
