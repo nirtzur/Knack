@@ -337,12 +337,15 @@ var LocateKnackFields = (function() {
 
     var Link = joint.dia.Link.define('demo.Link',
       {
-        attrs: { '.connection': { stroke: 'gray', strokeWidth: 2, pointerEvents: 'none' } },
+        attrs: { 
+          '.connection': { stroke: 'gray', strokeWidth: 2, pointerEvents: 'none' },
+          '.marker-target': { fill: 'gray', stroke: 'gray', d: 'M 10 0 L 0 5 L 10 10 z' }
+        },
         connector: { name: 'rounded' }, 
         z: -1, minLen: 1
       },
       {
-        markup: '<path class="connection"/><g class="labels"/>',
+        markup: '<path class="connection"/><path class="marker-target"/>',
         connect: function(sourceId, targetId) {
           return this.set({ source: { id: sourceId }, target: { id: targetId } });
         },
