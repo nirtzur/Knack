@@ -354,7 +354,13 @@ var LocateKnackFields = (function() {
     
     function capFirst(string) { return string.charAt(0).toUpperCase() + string.slice(1); }
 
-    function addElement(object, x = 0, y = 0) {
+    function elementExists(object) {
+      var element = elements.find( (element) => { return(element.id == object.key) } );
+      return typeof element != "undefined";
+    }
+
+    function addElement(object) {
+      if (elements.length > 2000 || elementExists(object)) { return null; }
       var shapeText = capFirst(object.key.split('_')[0]) + ": " + object.name + "\n key: " + object.key;
       if (["fields", "tasks", "views"].indexOf(object.parent) > -1 ) {
         shapeText = shapeText + "\n defined in: " + capFirst(object.origin.key.split('_')[0]) + " " + object.origin.name
@@ -362,30 +368,34 @@ var LocateKnackFields = (function() {
       var shape = new Shape({ id: object.key }).setText(shapeText).setWidth(shapeText).setColor(object.parent);
       shape.set("parent_object", object.parent);
       elements.push(shape);
+      return shape;
+    }
+
+    function addRelated(object, related = "used_by") {
+      Object.keys(object[related]).forEach(function(item) {
+        var element = addElement(object[related][item]);
+        links.push( related == "used_by" ? new Link().connect(item, object.key) : new Link().connect(object.key, item));
+        if (element && object[related]) { addRelated(object[related][item], related); }
+      });      
     }
 
     function createAdjancyList(object) {
       addElement(object);
-      Object.keys(object.used_by).forEach(function(used_by) {
-        addElement(object.used_by[used_by]);
-        links.push( new Link().connect(used_by, object.key) );
-      });
-      Object.keys(object.refers_to).forEach(function(refers_to) {
-        addElement(object.refers_to[refers_to]);
-        links.push( new Link().connect(object.key, refers_to) );
-      });
+      addRelated(object, "used_by");
+      addRelated(object, "refers_to");
     }
 
     function drawGraph(object, paper) {
       elements = links = [];
       createAdjancyList(object);
+      $('#summary').text("objects on screen: " + elements.length);
       graph.clear();
       graph.addCells(elements.concat(links));
-      joint.layout.DirectedGraph.layout(graph, { nodeSep: 50, edgeSep: 80, rankDir: "TB", ranker: 'longest-path'});
+      joint.layout.DirectedGraph.layout(graph, { nodeSep: 50, edgeSep: 80, rankDir: "TB"});
       paper.translate(0, 0);
     }
 
-    var graph = new joint.dia.Graph;
+    var graph = new joint.dia.Graph();
   
     var paper = new joint.dia.Paper({ el: $('#paper'), width: 1200, height: 600, model: graph, gridSize: 1, drawGrid: true });
 
