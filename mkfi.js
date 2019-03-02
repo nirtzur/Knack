@@ -318,4 +318,33 @@ window.addListeners = function($) {
     };      
   });
 
+  $(document).on('knack-view-render.view_474', function(event, view, data) {
+    $('.kn-report-row-3').css('display', 'none');
+  });
+
+  $(document).on('knack-view-render.view_621', function(event, view, data) {
+    var record_id = $('#view_621 a')[0].href.split('/').slice(-1)[0];  
+    $('#view_621 a')[0].href += "?view_622_vars=%7B%22field_1008%22%3A%5B%22" + record_id + "%22%5D%7D";
+  });
+
+  $(document).on('knack-view-render.view_631', function(event, view, data) {
+    $("#view_631 tbody td").each(function() {
+      if ($(this).text().match(/-/) == null) {
+        if (parseInt($(this).text().match(/\$(.*)/)[1]) > 0) {
+          $(this).css("backgroundColor", "pink");
+        }
+      }
+    });
+  });
+
+  $(document).on('knack-view-render.view_632', function(event, view, data) {
+    $("#view_632 tbody td").each(function() {
+      if ($(this).text().match(/-/) == null) {
+        if (parseInt($(this).text()) > 0) {
+          $(this).css("backgroundColor", "pink");
+        }
+      }
+    });
+  });
+
 }
