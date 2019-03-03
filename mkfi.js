@@ -346,19 +346,4 @@ window.addListeners = function($) {
       }
     });
   });
-
-// move average to top section for easier view
-  function getAverage() {
-    var average = $("#view_518 tr.kn-table-totals:last td")[6].innerText;
-    var summary = document.createElement('span');
-    summary.style.display = 'block';
-    summary.innerHTML = "Average for investor: " + average;
-    var search = $('form.table-keyword-search');
-    search.prepend(summary);
-  }
-
-  $(document).on('knack-view-render.view_518', function(event, view, data) {
-    setTimeout(getAverage, 100);
-  });
-
 }
