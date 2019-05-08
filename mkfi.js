@@ -141,23 +141,6 @@ window.addListeners = function($) {
   // reduce table sizes in cashflow
   $(document).on('knack-page-render.scene_260', function(event, page) {
     $('table.expand-records').css('width', 'inherit');
-
-  // Calculate field 'Meir' on cashflow report - monthly
-    var revised = [];
-    Array.from($('#kn-report-view_474-3 tbody tr')).forEach(function(val, index) {
-      revised[index] = parseFloat(val.getElementsByTagName('td')[2].innerText.substring(1).replace(/,/g, ''));
-    });
-
-    var rafi = [];
-    Array.from($('#kn-report-view_474-4 tbody tr')).forEach(function(val, index) {
-      rafi[index] = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(/,/g, ''));
-    });
-
-    Array.from($('#kn-report-view_474-5 tbody tr')).forEach(function(val, index) {
-      var ibds = parseFloat(val.getElementsByTagName('td')[1].innerText.substring(1).replace(/,/g, ''));
-      var meir = (revised[index] - rafi[index])/2 + ibds;
-      val.getElementsByTagName('td')[2].innerText = '$' + meir.toFixed(2);
-    });
   });
 
 
@@ -323,6 +306,30 @@ window.addListeners = function($) {
           $(this).css("backgroundColor", "pink");
         }
       }
+    });
+  });
+
+  // Use one selector for two graphs in Report "Current Investments vs Budget Per Investor Trend Report"
+  $(document).on('knack-view-render.view_662', function(event, view, data) {
+    $('#view_662 input[type=submit]').on("click", function(e) {
+      var filter = [{"field":"field_1127","operator":"is","value": $('#view_662-field_55').val()}];
+      var filter_string = encodeURIComponent(JSON.stringify(filter));
+      window.location.href = "https://mkfiprecision.knack.com/database#reports/investor-budget-history-report/?view_642_0_filters=" + filter_string + "&view_642_1_filters=" + filter_string;
+    return false;
+    });
+  });
+
+  // Use one selector for all foremen results reports
+  $(document).on('knack-view-render.view_668', function(event, view, data) {
+    $('#view_668 input[type=submit]').on("click", function(e) {
+      debugger;
+      var url = "https://mkfiprecision.knack.com/database#reports/properties10/"
+      var view_613_filter = [{"value":"","text":"12 Months","operator":"is during the previous","field":"field_112","type":"rolling years","range":"1"}]
+      var view_613_string = encodeURIComponent(JSON.stringify(view_613_filter));
+      var filter = [{"field":"field_914","operator":"is","value": $('#view_668-field_914').val()}];
+      var filter_string = encodeURIComponent(JSON.stringify(filter));
+      window.location.href = url + "?view_613_0_filters=" + view_613_string + "&view_610_filters=" + filter_string + "&view_664_filters=" + filter_string + "&view_666_filters=" + filter_string;
+    return false;
     });
   });
 }
