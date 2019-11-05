@@ -158,14 +158,15 @@ window.addListeners = function($) {
     var new_construction = $('#view_99 #kn-input-field_923').first().text().trim();
     if (new_construction == "Yes") {
       $('div#view_77 li.kn-link-1').css('display', 'none'); // Buying
-      $('div#view_77 li.kn-link-2').css('display', 'none'); // Rehab
-      $('div#view_77 li.kn-link-10').css('display', 'none'); // Wireform
+      $('div#view_77 li.kn-link-2').css('display', 'none'); // Occupied
+      $('div#view_77 li.kn-link-3').css('display', 'none'); // Rehab
+      $('div#view_77 li.kn-link-11').css('display', 'none'); // Wireform
     } else {
-      $('div#view_77 li.kn-link-3').css('display', 'none'); // Buying New
-      $('div#view_77 li.kn-link-4').css('display', 'none'); // P&D
-      $('div#view_77 li.kn-link-5').css('display', 'none'); // New Construction
-      $('div#view_77 li.kn-link-12').css('display', 'none'); // Wireform 1
-      $('div#view_77 li.kn-link-13').css('display', 'none'); // Wireform 2
+      $('div#view_77 li.kn-link-4').css('display', 'none'); // Buying New
+      $('div#view_77 li.kn-link-5').css('display', 'none'); // P&D
+      $('div#view_77 li.kn-link-6').css('display', 'none'); // New Construction
+      $('div#view_77 li.kn-link-13').css('display', 'none'); // Wireform 1
+      $('div#view_77 li.kn-link-14').css('display', 'none'); // Wireform 2
     }
   });
 
