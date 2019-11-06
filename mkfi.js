@@ -155,6 +155,8 @@ window.addListeners = function($) {
       $('div#view_77 li.kn-link-10').css('display', 'none'); //Payoff
     }
 
+    $('div#view_77 li.kn-link-12').css('display', 'none'); // Deed of Trust
+
     var new_construction = $('#view_99 #kn-input-field_923').first().text().trim();
     if (new_construction == "Yes") {
       $('div#view_77 li.kn-link-1').css('display', 'none'); // Buying
