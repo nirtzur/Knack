@@ -5,8 +5,10 @@
 var LocateKnackFields = (function() {
   var data = {};
   var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {} }
-  var elements = links = [];
+  var elements = [];
+  var links = [];
   var graphScale = 1;
+  var mouse = false;
 
   class Base {
     constructor(object, parent, origin = null) {
@@ -307,8 +309,8 @@ var LocateKnackFields = (function() {
     var Shape = joint.dia.Element.define('demo.Shape', 
       {
         attrs: {
-          rect: { refWidth: '100%', refHeight: '100%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10, style: 'cursor: zoom-in' },
-          text: { refX: '50%', refY: '50%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 15, style: 'cursor: zoom-in' }
+          rect: { refWidth: '50%', refHeight: '50%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10, style: 'cursor: zoom-in' },
+          text: { refX: '25%', refY: '25%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 12, style: 'cursor: zoom-in' }
         }
       }, 
       {
@@ -338,11 +340,10 @@ var LocateKnackFields = (function() {
     var Link = joint.dia.Link.define('demo.Link',
       {
         attrs: { 
-          '.connection': { stroke: 'gray', strokeWidth: 2, pointerEvents: 'none' },
-          '.marker-target': { fill: 'gray', stroke: 'gray', d: 'M 10 0 L 0 5 L 10 10 z' }
+          '.connection': { stroke: 'gray', strokeWidth: 1, pointerEvents: 'none' }
         },
         connector: { name: 'rounded' }, 
-        z: -1, minLen: 1
+        z: -1
       },
       {
         markup: '<path class="connection"/><path class="marker-target"/>',
@@ -375,7 +376,7 @@ var LocateKnackFields = (function() {
       Object.keys(object[related]).forEach(function(item) {
         var element = addElement(object[related][item]);
         links.push( related == "used_by" ? new Link().connect(item, object.key) : new Link().connect(object.key, item));
-        if (element && object[related]) { addRelated(object[related][item], related); }
+        // if (element && object[related]) { addRelated(object[related][item], related); }
       });      
     }
 
@@ -386,13 +387,22 @@ var LocateKnackFields = (function() {
     }
 
     function drawGraph(object, paper) {
-      elements = links = [];
+      elements = [];
+      links = [];
       createAdjancyList(object);
-      $('#summary').text("objects on screen: " + elements.length);
+      $('#summary').text("Objects on screen: " + elements.length);
       graph.clear();
       graph.addCells(elements.concat(links));
-      joint.layout.DirectedGraph.layout(graph, { nodeSep: 50, edgeSep: 80, rankDir: "TB"});
+      joint.layout.DirectedGraph.layout(graph, { rankSep: 20, nodeSep: 20, edgeSep: 20, rankDir: "LR" });
       paper.translate(0, 0);
+    }
+
+    function mouseEvent(delta, paper) {
+      if (mouse) {
+        graphScale += delta * 0.025; 
+        paper.scale(graphScale);
+        setTimeout(function() { mouseEvent(delta, paper); }, 25);
+      }
     }
 
     var graph = new joint.dia.Graph();
@@ -404,8 +414,7 @@ var LocateKnackFields = (function() {
     });
 
     paper.on('blank:pointerdown', function(event, x, y) {
-      var scale = V(paper.viewport).scale();
-      dragStartPosition = { x: x * scale.sx, y: y * scale.sy};
+      dragStartPosition = { x: x * graphScale, y: y * graphScale };
     });
     paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) { delete dragStartPosition; });
     $("#diagram").mousemove(function(event) {
@@ -414,9 +423,10 @@ var LocateKnackFields = (function() {
       }
     });
 
-    $("#plus").on("click", function() { graphScale += 0.05; paper.scale(graphScale); });
-    $("#minus").on("click", function() { graphScale -= 0.05; paper.scale(graphScale); });
-    $("#reset").on("click", function() { graphScale = 1; paper.scale(graphScale); });
+    $("#plus").on("mousedown", function() { mouse = true; mouseEvent(1, paper); });
+    $("#minus").on("mousedown", function() { mouse = true; mouseEvent(-1, paper); });
+    $("#plus, #minus").on("mouseup mouseout", function() { mouse = false; });
+    $("#reset").on("click", function() { mouse = false; graphScale = 1; paper.scale(graphScale); });
 
     drawGraph(main["application"]["Application"], paper);
   };
