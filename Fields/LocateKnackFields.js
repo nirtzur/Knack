@@ -309,7 +309,7 @@ var LocateKnackFields = (function() {
     var Shape = joint.dia.Element.define('demo.Shape', 
       {
         attrs: {
-          rect: { refWidth: '100%', refHeight: '100%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10, style: 'cursor: zoom-in' },
+          rect: { refWidth: '80%', refHeight: '100%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10, style: 'cursor: zoom-in' },
           text: { refX: '50%', refY: '50%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 12, style: 'cursor: zoom-in' }
         }
       }, 
