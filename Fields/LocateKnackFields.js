@@ -337,7 +337,7 @@ var LocateKnackFields = (function() {
           return this.attr('rect/fill', color(text));
         },
         setWidth: function(text) {
-          var len = Math.max.apply(null, text.split("\n").map(function(txt) {return 6 + txt.length }));
+          var len = Math.max.apply(null, text.split("\n").map(function(txt) {return 10 + txt.length }));
           return this.size(len * 9, 80);
         }
       }
