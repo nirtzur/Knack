@@ -310,7 +310,7 @@ var LocateKnackFields = (function() {
       {
         attrs: {
           rect: { refWidth: '80%', refHeight: '100%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10, style: 'cursor: zoom-in' },
-          text: { refX: '50%', refY: '50%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 12, style: 'cursor: zoom-in' }
+          text: { refX: '50%', refY: '40%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 12, style: 'cursor: zoom-in' }
         }
       }, 
       {
@@ -387,6 +387,7 @@ var LocateKnackFields = (function() {
     }
 
     function drawGraph(object, paper) {
+      Knack.showSpinner();
       elements = [];
       links = [];
       createAdjancyList(object);
@@ -395,6 +396,7 @@ var LocateKnackFields = (function() {
       graph.addCells(elements.concat(links));
       joint.layout.DirectedGraph.layout(graph, { rankSep: 20, nodeSep: 20, edgeSep: 20, rankDir: "LR" });
       paper.translate(0, 0);
+      Knack.hideSpinner();
     }
 
     function mouseEvent(delta, paper) {
