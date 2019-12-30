@@ -9,6 +9,12 @@ var LocateKnackFields = (function() {
   var links = [];
   var graphScale = 1;
   var mouse = false;
+  var current_object = null;
+  var showObjects = false;
+  var showScenes = false;
+  var showViews = false;
+  var showTasks = false;
+  var showFields = false;
 
   class Base {
     constructor(object, parent, origin = null) {
@@ -310,7 +316,7 @@ var LocateKnackFields = (function() {
       {
         attrs: {
           rect: { refWidth: '80%', refHeight: '100%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10, style: 'cursor: zoom-in' },
-          text: { refX: '50%', refY: '40%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 12, style: 'cursor: zoom-in' }
+          text: { refX: '40%', refY: '50%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 12, style: 'cursor: zoom-in' }
         }
       }, 
       {
@@ -372,11 +378,23 @@ var LocateKnackFields = (function() {
       return shape;
     }
 
+    function showRelated(object_type) {
+      switch(object_type) {
+        case "objects": return showObjects;
+        case "scenes": return showScenes;
+        case "views": return showViews;
+        case "fields": return showFields;
+        case "tasks": return showTasks;
+      }
+    }
+
     function addRelated(object, related = "used_by") {
       Object.keys(object[related]).forEach(function(item) {
-        var element = addElement(object[related][item]);
-        links.push( related == "used_by" ? new Link().connect(item, object.key) : new Link().connect(object.key, item));
-        // if (element && object[related]) { addRelated(object[related][item], related); }
+        if (showRelated(object[related][item].parent)) {
+          var element = addElement(object[related][item]);
+          links.push( related == "used_by" ? new Link().connect(item, object.key) : new Link().connect(object.key, item));
+          // if (element && object[related]) { addRelated(object[related][item], related); }
+        }
       });      
     }
 
@@ -386,10 +404,20 @@ var LocateKnackFields = (function() {
       addRelated(object, "refers_to");
     }
 
+    function markNeededObjects() {
+      showObjects = document.getElementById('showObjects').checked;
+      showScenes = document.getElementById('showScenes').checked;
+      showViews = document.getElementById('showViews').checked;
+      showFields = document.getElementById('showFields').checked;
+      showTasks = document.getElementById('showTasks').checked;
+    }
+
     function drawGraph(object, paper) {
       Knack.showSpinner();
+      current_object = object;
       elements = [];
       links = [];
+      markNeededObjects();
       createAdjancyList(object);
       $('#summary').text("Objects on screen: " + elements.length);
       graph.clear();
@@ -429,6 +457,7 @@ var LocateKnackFields = (function() {
     $("#minus").on("mousedown", function() { mouse = true; mouseEvent(-1, paper); });
     $("#plus, #minus").on("mouseup mouseout", function() { mouse = false; });
     $("#reset").on("click", function() { mouse = false; graphScale = 1; paper.scale(graphScale); });
+    $(".check_box").on("change", function() { drawGraph(current_object, paper); });
 
     drawGraph(main["application"]["Application"], paper);
   };
