@@ -385,6 +385,7 @@ var LocateKnackFields = (function() {
         case "views": return showViews;
         case "fields": return showFields;
         case "tasks": return showTasks;
+        default: return true;
       }
     }
 
