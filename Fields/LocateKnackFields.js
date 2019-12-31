@@ -462,6 +462,60 @@ var LocateKnackFields = (function() {
 
     drawGraph(main["application"]["Application"], paper);
   };
+
+  function createButton(id, class, innerHTML) {
+    var button = document.createElement('div');
+    button.id = id;
+    button.className = class;
+    button.innerHTML = innerHTML;
+    return button;
+  }
+
+  function createCheckBox(id, text) {
+    var checkBox = document.createElement('input');
+    checkBox.type = 'checkbox';
+    checkBox.id = id;
+    checkBox.checked = true;
+    checkBox.className = 'check_box';
+    var text = document.createTextNode(text);
+    checkBoxes.appendChild(text);
+    return checkBox;
+
+  }
+
+  function buildMapScreen() {
+    var diagram = document.createElement('div');
+    diagram.id = 'diagram'
+    document.getElementById('view_45').appendChild(diagram);
+    
+    var paper = document.createElement('div');
+    paper.id = 'paper';
+    paper.style.width = '1200px';
+    paper.style.height = '600px';
+    paper.style.border = '1px solid #D8DDE6';
+    diagram.appendChild(paper);
+    
+    diagram.appendChild(createButton('plus', 'zoom', 'Zoom In'));
+    diagram.appendChild(createButton('reset', 'zoom', 'Reset'));
+    diagram.appendChild(createButton('minus', 'zoom', 'Zoom Out'));
+    
+    var summary = document.createElement('div');
+    summary.id = 'summary';
+    summary.style.textAlign = "center";
+    diagram.appendChild(summary);
+    
+    var checkBoxes = document.createElement('div');
+    checkBoxes.className = 'kn-detail-body';
+    
+    checkBoxes.appendChild(createCheckBox('showObjects', "Show Objects"));
+    checkBoxes.appendChild(createCheckBox('showScenes', "Show Scenes"));
+    checkBoxes.appendChild(createCheckBox('showViews', "Show Views"));
+    checkBoxes.appendChild(createCheckBox('showFields', "Show Fields"));
+    checkBoxes.appendChild(createCheckBox('showTasks', "Show Tasks"));
+
+    var application_id = document.getElementsByClassName('field_33')[0];
+    application_id.appendChild(checkBoxes);
+  }
   
   return {
     loadData: loadData
