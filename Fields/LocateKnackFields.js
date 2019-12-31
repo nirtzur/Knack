@@ -479,7 +479,7 @@ var LocateKnackFields = (function() {
     checkBox.checked = true;
     checkBox.className = 'check_box';
     var text = document.createTextNode(text);
-    checkBoxes.appendChild(text);
+    checkBox.appendChild(text);
     return checkBox;
 
   }
