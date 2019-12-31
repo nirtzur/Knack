@@ -109,7 +109,7 @@ var LocateKnackFields = (function() {
   }
 
   function getTaskCriteria(criteria) {
-    var criteria_string = "";
+    var criteria_array = [];
     criteria.forEach(function(crit) {
       var value_string = "";
       if (crit["value"]) {
@@ -123,9 +123,9 @@ var LocateKnackFields = (function() {
       else {
         value_string = crit["range"] + " " + crit["type"];
       }
-      criteria_string += main["fields"][crit["field"]].name + " " + crit["operator"] + " " + value_string + "\n";
+      criteria_array.push(main["fields"][crit["field"]].name + " " + crit["operator"] + " " + value_string);
     })
-    return criteria_string;
+    return criteria_array.join(" AND ");
   }
 
   function getTaskSchedule(schedule) {
