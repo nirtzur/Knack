@@ -292,6 +292,7 @@ var LocateKnackFields = (function() {
           loadObjectTypes();
           locateUsedByFields();
           if (visual == "graph") {
+            buildMapScreen();
             mapData();
           }
           else
