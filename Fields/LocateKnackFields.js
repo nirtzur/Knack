@@ -83,6 +83,11 @@ var LocateKnackFields = (function() {
   }
 
   class Task extends Base {
+    constructor(object, parent) {
+      super(object, parent);
+      this.criteria = getTaskCriteria(object["action"]["criteria"]);
+      this.schedule = getTaskSchedule(object["schedule"]);
+    }
     builderLink() { return super.builderLink() + "data/" + this.origin.key + "/tasks/" + this.key; }
   }
 
@@ -101,6 +106,30 @@ var LocateKnackFields = (function() {
 
   class View extends Base {
     builderLink() { return super.builderLink() + "pages/" + this.origin.key + "/views/" + this.key; }
+  }
+
+  function getTaskCriteria(criteria) {
+    var criteria_string = "";
+    criteria.forEach(function(crit) {
+      var value_string = "";
+      if (crit["value"]) {
+        if (typeof crit["value"]["date"] == "undefined") {
+          value_string = crit["value"];
+        }
+        else {
+          value_string = crit["value"]["date"];
+        }
+      }
+      else {
+        value_string = crit["range"] + " " + crit["type"];
+      }
+      criteria_string += main["fields"][crit["field"]].name + " " + crit["operator"] + " " + value_string + "\n";
+    })
+    return criteria_string;
+  }
+
+  function getTaskSchedule(schedule) {
+    return schedule["time"] + " " + schedule["date"] + " " + schedule["repeat"];
   }
 
   function order(a,b) {
@@ -148,7 +177,7 @@ var LocateKnackFields = (function() {
     });
   }
 
-  function getLink(object, record) {
+  function getLink(object, record, click) {
     var li = document.createElement('li');
     var linkToObject = document.createElement('a');
     var linkToBuilder = document.createElement('a');
@@ -157,8 +186,10 @@ var LocateKnackFields = (function() {
     linkToObject.innerHTML = object.name + name;
     linkToObject.id = object.key;
     linkToObject.setAttribute('parent', object.parent);
-    linkToObject.href = object.name;
-    linkToObject.title = "Find references to " + object.name;
+    if (click) {
+      linkToObject.href = object.name;
+      linkToObject.title = "Find references to " + object.name;
+    }
 
     linkToBuilder.innerHTML = "(" + object.key + ")";
     linkToBuilder.id = object.key;
@@ -178,7 +209,7 @@ var LocateKnackFields = (function() {
     return span;
   }
 
-  function buildCell(cell, record, key) {
+  function buildCell(cell, record, key, click) {
     var object = record[key];
     if (!object || typeof object === 'string') {
       var li = document.createElement('li');
@@ -196,14 +227,13 @@ var LocateKnackFields = (function() {
           cell.appendChild(objectHeader(item));
           heading = item.parent;
         }
-        cell.appendChild(getLink(item, record));
+        cell.appendChild(getLink(item, record, click));
       });
     };
   }
 
-  function buildTable(records) {
+  function buildTable(records, headers = ["name", "key", "used_by", "refers_to"], click = true) {
     var record_keys = Object.keys(records);
-    var headers = ["name", "key", "used_by", "refers_to"];
     var table = document.getElementsByClassName('kn-table-table')[0];
     cleanTable(table);
     createHeaders(table, headers);
@@ -214,10 +244,10 @@ var LocateKnackFields = (function() {
       headers.forEach(function(key) {
         var cell = row.insertCell(-1);
         cell.className = 'cell-edit';
-        buildCell(cell, record, key);
+        buildCell(cell, record, key, click);
       });
     });
-    table.addEventListener("click", showObject, false);
+    if (click) { table.addEventListener("click", showObject, false); }
   }
 
   function locateUsedByFields() {
@@ -291,14 +321,20 @@ var LocateKnackFields = (function() {
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
           locateUsedByFields();
-          if (visual == "graph") {
-            buildMapScreen();
-            mapData();
-          }
-          else
-          {
-            searchFields();
-            buildTable(main["application"]);
+          switch(visual) {
+            case "graph": {
+              buildMapScreen();
+              mapData();
+              break;
+            }
+            case "tasks": {
+              buildTable(main["tasks"], ["key", "name", "used_by", "refers_to", "schedule", "criteria"], false);
+              break;
+            }
+            default: {
+              searchFields();
+              buildTable(main["application"]);
+            }
           }
         }
         else {
