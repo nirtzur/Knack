@@ -472,16 +472,15 @@ var LocateKnackFields = (function() {
     return button;
   }
 
-  function createCheckBox(id, text) {
+  function createCheckBox(div, id, text) {
     var checkBox = document.createElement('input');
     checkBox.type = 'checkbox';
     checkBox.id = id;
     checkBox.checked = true;
     checkBox.className = 'check_box';
+    div.appendChild(checkBox);
     var text = document.createTextNode(text);
-    checkBox.appendChild(text);
-    return checkBox;
-
+    div.appendChild(text);
   }
 
   function buildMapScreen() {
@@ -508,11 +507,11 @@ var LocateKnackFields = (function() {
     var checkBoxes = document.createElement('div');
     checkBoxes.className = 'kn-detail-body';
     
-    checkBoxes.appendChild(createCheckBox('showObjects', "Show Objects"));
-    checkBoxes.appendChild(createCheckBox('showScenes', "Show Scenes"));
-    checkBoxes.appendChild(createCheckBox('showViews', "Show Views"));
-    checkBoxes.appendChild(createCheckBox('showFields', "Show Fields"));
-    checkBoxes.appendChild(createCheckBox('showTasks', "Show Tasks"));
+    createCheckBox(checkBoxes, 'showObjects', "Show Objects");
+    createCheckBox(checkBoxes, 'showScenes', "Show Scenes");
+    createCheckBox(checkBoxes, 'showViews', "Show Views");
+    createCheckBox(checkBoxes, 'showFields', "Show Fields");
+    createCheckBox(checkBoxes, 'showTasks', "Show Tasks");
 
     var application_id = document.getElementsByClassName('field_33')[0];
     application_id.appendChild(checkBoxes);
