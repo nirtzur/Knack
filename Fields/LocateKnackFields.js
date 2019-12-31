@@ -464,10 +464,10 @@ var LocateKnackFields = (function() {
     drawGraph(main["application"]["Application"], paper);
   };
 
-  function createButton(id, class, innerHTML) {
+  function createButton(id, class_name, innerHTML) {
     var button = document.createElement('div');
     button.id = id;
-    button.className = class;
+    button.className = class_name;
     button.innerHTML = innerHTML;
     return button;
   }
