@@ -61,11 +61,15 @@ var LocateKnackFields = (function() {
           this.relate(object);
         }
       }
+
+      this.prettifyRelations();
     }
 
     builderLink() {
       return "https://builder.knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + "#"
     }
+
+    prettifyRelations() {};
   }
 
   class Application extends Base {
@@ -85,10 +89,16 @@ var LocateKnackFields = (function() {
   class Task extends Base {
     constructor(object, parent) {
       super(object, parent);
-      this.criteria = getTaskCriteria(object["action"]["criteria"]);
-      this.schedule = getTaskSchedule(object["schedule"]);
+      this.run_status = object["run_status"];
     }
+
     builderLink() { return super.builderLink() + "data/" + this.origin.key + "/tasks/" + this.key; }
+
+    prettifyRelations() {
+      this.criteria = getTaskCriteria(this["input"]["action"]["criteria"]);
+      this.schedule = getTaskSchedule(this["input"]["schedule"]);
+      this.actions = getTaskActions(this["input"]["action"]["values"]);
+    }
   }
 
   class Field extends Base {
@@ -130,6 +140,31 @@ var LocateKnackFields = (function() {
 
   function getTaskSchedule(schedule) {
     return schedule["time"] + " " + schedule["date"] + " " + schedule["repeat"];
+  }
+
+  function getTaskActions(actions) {
+    var action_array = [];
+    actions.forEach(function(action) {
+      var action_string = "Set " + main["fields"][action["field"]].name
+      switch(action["type"]) {
+        case "record": {
+          action_string += " to field " + main["fields"][action["input"]].name + " value";
+          break;
+        }
+        case "connection": {
+          var connected_object = main["fields"][action["connection_field"].split('-')[0]].name;
+          var connected_field = main["fields"][action["connection_field"].split('-')[1]].name;
+          action_string += " to a connected value " + connected_object + "." + connected_field + " value";
+          break;
+        }
+        case "value": {
+          action_string += " to custom value " + action["value"];
+          break;
+        }
+      }
+      action_array.push(action_string);
+    });
+    return action_array.join(' AND ');
   }
 
   function order(a,b) {
@@ -328,7 +363,7 @@ var LocateKnackFields = (function() {
               break;
             }
             case "tasks": {
-              buildTable(main["tasks"], ["key", "name", "used_by", "refers_to", "schedule", "criteria"], false);
+              buildTable(main["tasks"], ["key", "name", "run_status", "used_by", "refers_to", "schedule", "criteria", "actions"], false);
               break;
             }
             default: {
