@@ -250,9 +250,9 @@ var LocateKnackFields = (function() {
   function buildCell(cell, record, key, click) {
     var object = record[key];
     if (!object || typeof object === 'string') {
-      var li = document.createElement('li');
-      li.innerHTML = object;
-      cell.appendChild(li);
+      var span = document.createElement('span');
+      span.innerHTML = object;
+      cell.appendChild(span);
     }
     else if (Object.prototype.toString.call(object) === '[object Array]') {
       object.forEach(function(obj) {
