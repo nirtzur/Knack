@@ -123,11 +123,14 @@ var LocateKnackFields = (function() {
     criteria.forEach(function(crit) {
       var value_string = "";
       if (crit["value"]) {
-        if (typeof crit["value"]["date"] == "undefined") {
-          value_string = crit["value"];
+        if (typeof crit["value"]["date"] != "undefined") {
+          value_string = crit["value"]["date"];
+        }
+        else if (typeof crit["value"]["range"] != "undefined") {
+          value_string = crit["range"] + " " + crit["type"];
         }
         else {
-          value_string = crit["value"]["date"];
+          value_string = crit["value"];
         }
       }
       else {
@@ -135,7 +138,7 @@ var LocateKnackFields = (function() {
       }
       criteria_array.push(main["fields"][crit["field"]].name + " " + crit["operator"] + " " + value_string);
     })
-    return criteria_array.join(" AND ");
+    return criteria_array;
   }
 
   function getTaskSchedule(schedule) {
@@ -154,7 +157,7 @@ var LocateKnackFields = (function() {
         case "connection": {
           var connected_object = main["fields"][action["connection_field"].split('-')[0]].name;
           var connected_field = main["fields"][action["connection_field"].split('-')[1]].name;
-          action_string += " to a connected value " + connected_object + "." + connected_field + " value";
+          action_string += " to a connected value of " + connected_object + "." + connected_field + " value";
           break;
         }
         case "value": {
@@ -164,7 +167,7 @@ var LocateKnackFields = (function() {
       }
       action_array.push(action_string);
     });
-    return action_array.join(' AND ');
+    return action_array;
   }
 
   function order(a,b) {
@@ -251,7 +254,13 @@ var LocateKnackFields = (function() {
       li.innerHTML = object;
       cell.appendChild(li);
     }
-    else {
+    else if (Object.prototype.toString.call(object) === '[object Array]') {
+      object.forEach(function(obj) {
+        var li = document.createElement('li');
+        li.innerHTML = obj;
+        cell.appendChild(li);   
+      });
+    } else {
       var heading = "";
       var sorted_objects = [];
       var temp = [];
