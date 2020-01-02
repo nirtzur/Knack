@@ -97,7 +97,7 @@ var LocateKnackFields = (function() {
     prettifyRelations() {
       this.criteria = getTaskCriteria(this["input"]["action"]["criteria"]);
       this.schedule = getTaskSchedule(this["input"]["schedule"]);
-      this.actions = getTaskActions(this["input"]["action"]["values"]);
+      this.actions = getTaskActions(this["input"]["action"]);
     }
   }
 
@@ -118,6 +118,10 @@ var LocateKnackFields = (function() {
     builderLink() { return super.builderLink() + "pages/" + this.origin.key + "/views/" + this.key; }
   }
 
+  function fieldName(key) {
+    return main["fields"][key].origin.name + "." + main["fields"][key].name;
+  }
+
   function getTaskCriteria(criteria) {
     var criteria_array = [];
     criteria.forEach(function(crit) {
@@ -136,7 +140,7 @@ var LocateKnackFields = (function() {
       else {
         value_string = crit["range"] + " " + crit["type"];
       }
-      criteria_array.push(main["fields"][crit["field"]].name + " " + crit["operator"] + " " + value_string);
+      criteria_array.push(fieldName(crit["field"]) + " " + crit["operator"] + " " + value_string);
     })
     return criteria_array;
   }
@@ -147,26 +151,54 @@ var LocateKnackFields = (function() {
 
   function getTaskActions(actions) {
     var action_array = [];
-    actions.forEach(function(action) {
-      var action_string = "Set " + main["fields"][action["field"]].name
+    var action_string = "";
+
+    switch(actions["action"]) {
+      case "record": { 
+        action_string = "Update existing record";
+        break;
+      }
+      case "connection": {
+        action_string = "Update connected " + main["objects"][actions["connection"].split('.')[0]].name + " record";
+        break;
+      }
+      case "insert": {
+        action_string = "Insert new connected " + main["objects"][actions["connection"].split('.')[0]].name + " record";
+        break;
+      }
+      case "email": {
+        action_string = "Send a custom email";
+        break;
+      }
+    }
+
+    action_array.push(action_string);
+
+    actions["values"] && actions["values"].forEach(function(action) {
+      action_string = "Set " + fieldName(action["field"])
       switch(action["type"]) {
         case "record": {
-          action_string += " to field " + main["fields"][action["input"]].name + " value";
+          action_string += " to field " + fieldName(action["input"]) + " value";
           break;
         }
         case "connection": {
-          var connected_object = main["fields"][action["connection_field"].split('-')[0]].name;
-          var connected_field = main["fields"][action["connection_field"].split('-')[1]].name;
+          var connected_object = fieldName(action["connection_field"].split('-')[0]);
+          var connected_field = fieldName(action["connection_field"].split('-')[1]);
           action_string += " to a connected value of " + connected_object + "." + connected_field + " value";
           break;
         }
         case "value": {
-          action_string += " to custom value " + action["value"];
+          var value = (typeof action["value"] === 'string') ? action["value"] : Object.values(action["value"]).join(' ');
+          action_string += " to custom value " + value;
           break;
         }
       }
       action_array.push(action_string);
     });
+
+    if (actions["email"]) {
+      action_array.push("Email subject \"" + actions["email"]["subject"] + "\"")
+    }
     return action_array;
   }
 
