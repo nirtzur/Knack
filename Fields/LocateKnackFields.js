@@ -77,18 +77,24 @@ var LocateKnackFields = (function() {
       super(object, parent);
       this.slug = object["slug"];
       this.account_name = object["account"]["slug"];
+      this.count = "<br>Total entries: " + object["counts"]["total_entries"] + "<br>Asset size: " + object["counts"]["asset_size"]
     }
     contains() { return [ "objects", "scenes" ] }
   }
 
   class Record extends Base {
+    constructor(object, parent, origin) {
+      super(object, parent, origin);
+      this.count = "<br>Total entries: " + data["application"]["counts"][this.key];
+    }
+
     contains() { return [ "fields", "tasks" ] }
     builderLink() { return super.builderLink() + "data/" + this.key; }
   }
 
   class Task extends Base {
-    constructor(object, parent) {
-      super(object, parent);
+    constructor(object, parent, origin) {
+      super(object, parent, origin);
       this.run_status = object["run_status"];
     }
 
@@ -106,8 +112,8 @@ var LocateKnackFields = (function() {
   }
   
   class Scene extends Base {
-    constructor(object, parent) {
-      super(object, parent);
+    constructor(object, parent, origin) {
+      super(object, parent, origin);
       this.slug = object["slug"];
     }
     contains() { return [ "views" ] }
@@ -252,7 +258,7 @@ var LocateKnackFields = (function() {
     var linkToObject = document.createElement('a');
     var linkToBuilder = document.createElement('a');
 
-    var name = (["fields", "tasks", "views"].indexOf(object.parent) > -1 && record.name != object.origin.name) ? " (" + object.origin.name + ")" : "";
+    var name = (["fields", "tasks", "views"].indexOf(object.parent) > -1 && object.origin && record.name != object.origin.name) ? " (" + object.origin.name + ")" : "";
     linkToObject.innerHTML = object.name + name;
     linkToObject.id = object.key;
     linkToObject.setAttribute('parent', object.parent);
@@ -284,6 +290,11 @@ var LocateKnackFields = (function() {
     if (!object || typeof object === 'string') {
       var span = document.createElement('span');
       span.innerHTML = object;
+      if (record.count && key == "name") {
+        var count = document.createElement('span');
+        count.innerHTML = record.count;
+        span.appendChild(count);
+      }
       cell.appendChild(span);
     }
     else if (Object.prototype.toString.call(object) === '[object Array]') {
