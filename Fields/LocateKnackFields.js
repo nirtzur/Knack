@@ -77,7 +77,7 @@ var LocateKnackFields = (function() {
       super(object, parent);
       this.slug = object["slug"];
       this.account_name = object["account"]["slug"];
-      this.count = "<br>Total entries: " + object["counts"]["total_entries"] + "<br>Asset size: " + object["counts"]["asset_size"]
+      this.count = "<br>Total entries: " + object["counts"]["total_entries"] + " records<br>Asset size: " + object["counts"]["asset_size"] + " bytes"
     }
     contains() { return [ "objects", "scenes" ] }
   }
@@ -85,7 +85,7 @@ var LocateKnackFields = (function() {
   class Record extends Base {
     constructor(object, parent, origin) {
       super(object, parent, origin);
-      this.count = "<br>Total entries: " + data["application"]["counts"][this.key];
+      this.count = "<br>Total entries: " + data["application"]["counts"][this.key] + " records";
     }
 
     contains() { return [ "fields", "tasks" ] }
