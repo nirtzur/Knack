@@ -64,12 +64,16 @@ window.addListeners = function($) {
   function createRecord(data) {
     $('.kn-message p')[0].innerHTML= "Creating new record";
     data["field_579"] = "Revised";
+    var string = new Date().toLocaleString();
+    var resultArray = string.split(":");
+    var result = string.replace(":" + resultArray[2]," ") + resultArray[2].split(" ")[1];
+    data["field_472"] = result;
     
     ajaxCall('POST', 'object_18/records', getPre, data);   
   }
 
   function getMyData(view) {
-    $('.kn-message p')[0].innerHTML = "Coping record";
+    $('.kn-message p')[0].innerHTML = "Copying record";
     ajaxCall('GET', 'object_18/records/' + current_budget + '?format=raw', createRecord);
   }
 
