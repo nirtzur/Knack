@@ -368,18 +368,23 @@ var LocateKnackFields = (function() {
   }
 
   function searchdata() {
-    var data = [];
     var sorted_objects = [];
     var temp = [];
-    Object.keys(main["fields"]).forEach(function(key) { temp.push(main["fields"][key]) });
-    sorted_objects = temp.sort(order);
 
-    sorted_objects.forEach(function(field) {
-      if (field.name != "not found") {
-        data.push({ value: field.key, text: field.name + " (" + field.key + " defined in " + field.origin.name + ")" });
-      }
+    ["objects", "fields", "scenes", "views", "tasks"].forEach(function(type) {
+      Object.keys(main[type]).forEach(function(object) {
+        obj = main[type][object];
+        if (obj.name != "not found") {
+          temp.push({
+            value: obj.key,
+            text: obj.name + " (" + obj.key + " defined in " + obj.origin.name + ")",
+            parent: type,
+          });
+        }
+      });
     });
-    return data;
+
+    return temp.sort(order);
   }
 
   function searchFields() {
@@ -395,7 +400,7 @@ var LocateKnackFields = (function() {
       placeholder: "Search fields"
     });
     selector.on('selectr.select', function(option) {
-      buildTable({ "object": main["fields"][option["value"]] });
+      buildTable({ "object": main[this.data[option.idx].parent][option["value"]] });
     });
   }
 
