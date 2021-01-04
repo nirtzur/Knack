@@ -339,4 +339,28 @@ window.addListeners = function($) {
     return false;
     });
   });
+
+  // hide rehab types data table
+  $(document).on('knack-page-render.scene_361', function(event, view, data) {
+    $('#view_704').css('display', 'none');
+  });
+
+  // Create rehab types for property
+  $(document).on('knack-form-submit.view_697', function(event, view, record) {
+    var table = $('.view_704 tbody tr');
+
+    for (var item in table) {
+      var data = {};
+      data['field_1379'] = record.id;
+      data['field_1378'] = item.id;
+
+      ajaxCall('POST', 'object_37/records', null, data);
+    }
+    
+  });
+
+
+
+
+
 }
