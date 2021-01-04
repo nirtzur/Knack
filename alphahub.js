@@ -352,7 +352,7 @@ window.addListeners = function($) {
     for (var item in table) {
       var data = {};
       data['field_1379'] = record.id;
-      data['field_1378'] = item.id;
+      data['field_1378'] = table[item].id;
 
       ajaxCall('POST', 'object_37/records', null, data);
     }
