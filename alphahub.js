@@ -356,6 +356,6 @@ window.addListeners = function($) {
 
       ajaxCall('POST', 'object_37/records', null, data);
     }
-    
+    setTimeout(function() {}, 500);
   });
 }
