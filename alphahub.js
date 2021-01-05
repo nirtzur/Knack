@@ -349,13 +349,16 @@ window.addListeners = function($) {
   $(document).on('knack-form-submit.view_697', function(event, view, record) {
     var table = $('.view_704 tbody tr').toArray();
 
-    for (var item in table) {
-      var data = {};
-      data['field_1379'] = record.id;
-      data['field_1378'] = table[item].id;
+    items = table.reduce( (arr, item) => {
+      arr.push(new Promise(function(resolve, reject) {
+        var data = {};
+        data['field_1379'] = record.id;
+        data['field_1378'] = table[item].id;
 
-      ajaxCall('POST', 'object_37/records', null, data);
-    }
-    setTimeout(function() {}, 2000);
+        ajaxCall('POST', 'object_37/records', Promise.resolve('Success'), data);
+      }));
+      return arr;
+    }, []);
+    await Promise.all(items);
   });
 }
