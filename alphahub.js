@@ -360,5 +360,6 @@ window.addListeners = function($) {
       return arr;
     }, []);
     await Promise.all(items);
+    console.log(items);
   });
 }
