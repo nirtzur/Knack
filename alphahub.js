@@ -361,5 +361,7 @@ window.addListeners = function($) {
     }, []);
     await Promise.all(items);
     console.log(items);
+    setTimeout(function() {}, 2000);
+    console.log("waited");
   });
 }
