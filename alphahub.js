@@ -353,7 +353,7 @@ window.addListeners = function($) {
       arr.push(new Promise(function(resolve, reject) {
         var data = {};
         data['field_1379'] = record.id;
-        data['field_1378'] = table[item].id;
+        data['field_1378'] = item.id;
 
         ajaxCall('POST', 'object_37/records', Promise.resolve('Success'), data);
       }));
