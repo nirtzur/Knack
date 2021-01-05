@@ -346,7 +346,7 @@ window.addListeners = function($) {
   });
 
   // Create rehab types for property
-  $(document).on('knack-form-submit.view_697', function(event, view, record) {
+  $(document).on('knack-form-submit.view_697', async function(event, view, record) {
     var table = $('.view_704 tbody tr').toArray();
 
     items = table.reduce( (arr, item) => {
