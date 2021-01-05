@@ -345,8 +345,7 @@ window.addListeners = function($) {
     $('#view_704').css('display', 'none');
   });
 
-  // Create rehab types for property
-  $(document).on('knack-form-submit.view_697', async function(event, view, record) {
+  async function create_rehab_items(record) {
     var table = $('.view_704 tbody tr').toArray();
 
     items = table.reduce( (arr, item) => {
@@ -363,5 +362,10 @@ window.addListeners = function($) {
     console.log(items);
     setTimeout(function() {}, 2000);
     console.log("waited");
+  }
+
+  // Create rehab types for property
+  $(document).on('knack-form-submit.view_697', function(event, view, record) {
+    create_rehab_items(record);
   });
 }
