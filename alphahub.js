@@ -354,18 +354,16 @@ window.addListeners = function($) {
         data['field_1379'] = record.id;
         data['field_1378'] = item.id;
 
-        ajaxCall('POST', 'object_37/records', resolve('Success'), data);
+        ajaxCall('POST', 'object_37/records', resolve, data);
       }));
       return arr;
     }, []);
     await Promise.all(items);
-    console.log(items);
-    setTimeout(function() {}, 2000);
-    console.log("waited");
+    Knack.views["view_698"].model.fetch();
   }
 
   // Create rehab types for property
-  $(document).on('knack-form-submit.view_697', function(event, view, record) {
-    create_rehab_items(record);
+  $(document).on('knack-form-submit.view_697', async function(event, view, record) {
+    await create_rehab_items(record);
   });
 }
