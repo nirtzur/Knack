@@ -121,9 +121,10 @@ window.addListeners = function($) {
 
   // set selector to "PRECISION ASSETS" and funds to calculated amount
   $(document).on('knack-view-render.view_210', function(event, view, data) {
-    var amount = window.document.getElementsByClassName('field_241')[0].getElementsByTagName('td')[0].getElementsByTagName('span')[0].innerHTML;
+    // var amount = window.document.getElementsByClassName('field_241')[0].getElementsByTagName('td')[0].getElementsByTagName('span')[0].innerHTML;
+    var amount = window.document.getElementsByClassName('field_241')[0].getElementsByClassName('kn-detail-body')[0].innerText;
     $("#field_297").val(amount);
-    $("#view_210-field_55").val("55c3d24b6393963e5f81be74").trigger('liszt:updated');
+    $("#view_210-field_55").val("5f5d0f3925040f00158c5aba").trigger('liszt:updated');
   });
 
 
