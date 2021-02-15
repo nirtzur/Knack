@@ -345,7 +345,7 @@ window.addListeners = function($) {
   });
 
   async function create_rehab_items(record) {
-    return new Promise(function(rslv, rjct) {
+    return new Promise(async function(rslv, rjct) {
       Knack.showSpinner();
       var table = $('.view_704 tbody tr').toArray();
 
