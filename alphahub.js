@@ -364,11 +364,10 @@ window.addListeners = function($) {
   });
 
   async function create_rehab_items(record) {
-    var tab = await new Promise(r => ajaxCall('GET', 'object_26/records', r));
-    var table = $('.view_704 tbody tr').toArray();
+    var table = await new Promise(r => ajaxCall('GET', 'object_26/records?rows_per_page=1000', r));
     var throttle = 9;
 
-    var items = table.reduce( (arr, item) => {
+    var items = table.records.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
         throttle -= 1;
         if (throttle == 0) {
