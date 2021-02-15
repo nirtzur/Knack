@@ -364,7 +364,7 @@ window.addListeners = function($) {
   });
 
   async function create_rehab_items(record) {
-    var tab = await new Promise(r => ajaxCall('GET', 'object_26', r));
+    var tab = await new Promise(r => ajaxCall('GET', 'object_26/records', r));
     var table = $('.view_704 tbody tr').toArray();
     var throttle = 9;
 
