@@ -352,8 +352,8 @@ window.addListeners = function($) {
       arr.push(new Promise(async function(resolve, reject) {
         throttle -= 1;
         if (throttle == 0) {
-          throttle = 9;
-          await new Promise(r => setTimeout(r, 1000));
+          throttle = 7;
+          await new Promise(r => setTimeout(r, 700));
         }
 
         var data = {};
