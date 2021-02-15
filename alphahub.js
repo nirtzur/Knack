@@ -345,37 +345,34 @@ window.addListeners = function($) {
   });
 
   async function create_rehab_items(record) {
-    return new Promise(async function(rslv, rjct) {
-      var table = $('.view_704 tbody tr').toArray();
-      var throttle = 9;
+    var table = $('.view_704 tbody tr').toArray();
+    var throttle = 9;
 
-      items = table.reduce( (arr, item) => {
-        arr.push(new Promise(async function(resolve, reject) {
-          throttle -= 1;
-          if (throttle == 0) {
-            throttle = 9;
-            await new Promise(r => setTimeout(r, 1000));
-          }
+    items = table.reduce( (arr, item) => {
+      arr.push(new Promise(async function(resolve, reject) {
+        throttle -= 1;
+        if (throttle == 0) {
+          throttle = 9;
+          await new Promise(r => setTimeout(r, 1000));
+        }
 
-          var data = {};
-          data['field_1379'] = record.id;
-          data['field_1378'] = item.id;
+        var data = {};
+        data['field_1379'] = record.id;
+        data['field_1378'] = item.id;
 
-          ajaxCall('POST', 'object_37/records', resolve, data);
-        }));
-        return arr;
-      }, []);
-      await Promise.all(items);
-      ajaxCall('PUT', 'object_22/records/' + record.id, null, {"field_1390": true});
-      Knack.views["view_698"].model.fetch();
-      rslv("done");
-    });
+        ajaxCall('POST', 'object_37/records', resolve, data);
+      }));
+      return arr;
+    }, []);
+    await Promise.all(items);
+    ajaxCall('PUT', 'object_22/records/' + record.id, null, {"field_1390": true});
+    Knack.views["view_698"].model.fetch();
   }
 
   // wait for 'initialization completed' indication
-  $(document).on('knack-view-render.view_313', async function(event, view, data) {
+  $(document).on('knack-view-render.view_313', function(event, view, data) {
     if (!data.field_1390_raw) {
-      await create_rehab_items(data);
+      create_rehab_items(data);
     }
   });
 }
