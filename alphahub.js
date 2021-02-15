@@ -25,7 +25,7 @@ window.addListeners = function($) {
       headers: {
         'X-Knack-Application-Id': Knack.application_id,
         'Authorization': Knack.getUserToken(),
-        'X-Knack-REST-API-Key': 'knack',
+        'X-Knack-REST-API-Key': 'Knack',
         'Content-Type': 'application/json'
       },
       data: JSON.stringify(data),
@@ -365,8 +365,8 @@ window.addListeners = function($) {
     var items = table.records.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
         var data = {};
-        data['field_1379'] = record.id;
-        data['field_1378'] = [item.id];
+        data['field_1376'] = record.id;
+        data['field_1377'] = item.id;
 
         ajaxView('POST', 'scene_365/views/view_714/records', resolve, data);
       }));
