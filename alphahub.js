@@ -350,7 +350,7 @@ window.addListeners = function($) {
       var throttle = 9;
 
       items = table.reduce( (arr, item) => {
-        arr.push(new Promise(function(resolve, reject) {
+        arr.push(new Promise(async function(resolve, reject) {
           throttle -= 1;
           if (throttle == 0) {
             throttle = 9;
