@@ -386,12 +386,15 @@ window.addListeners = function($) {
 
   // wait for 'initialization completed' indication
   $(document).on('knack-view-render.view_313', async function(event, view, data) {
+    Knack.showSpinner();
+    await new Promise(r => setTimeout(r, 21000));
+    Knack.hideSpinner();
     var indication = data.field_1389_raw;
 
     while (!indication) {
       indication = await get_initialization_indication(data);
     }
-    
+
     Knack.views["view_313"].model.fetch();
   });
 }
