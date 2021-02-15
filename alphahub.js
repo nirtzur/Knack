@@ -376,4 +376,22 @@ window.addListeners = function($) {
     await create_rehab_items(record);
     ajaxCall('PUT', 'object_22/records/' + record.id, null, {"field_1389": true});
   });
+
+  async function get_initialization_indication(data) {
+    await new Promise(r => setTimeout(r, 1000));
+    return new Promise(function(resolve, reject) {
+      ajaxCall('GET', 'object_22/records/' + data.id, function(response) { resolve(response.field_1389_raw); } );
+    });
+  }
+
+  // wait for 'initialization completed' indication
+  $(document).on('knack-view-render.view_313', async function(event, view, data) {
+    var indication = data.field_1389_raw;
+
+    while (!indication) {
+      indication = await get_initialization_indication(data);
+    }
+    
+    Knack.views["view_313"].model.fetch();
+  });
 }
