@@ -347,9 +347,16 @@ window.addListeners = function($) {
   async function create_rehab_items(record) {
     return new Promise(async function(rslv, rjct) {
       var table = $('.view_704 tbody tr').toArray();
+      var throttle = 9;
 
       items = table.reduce( (arr, item) => {
         arr.push(new Promise(function(resolve, reject) {
+          throttle -= 1;
+          if (throttle == 0) {
+            throttle = 9;
+            await new Promise(r => setTimeout(r, 1000));
+          }
+
           var data = {};
           data['field_1379'] = record.id;
           data['field_1378'] = item.id;
