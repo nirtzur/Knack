@@ -24,7 +24,7 @@ window.addListeners = function($) {
       type: action,
       headers: {
         'X-Knack-Application-Id': Knack.application_id,
-        // 'Authorization': Knack.getUserToken(),
+        'Authorization': Knack.getUserToken(),
         'X-Knack-REST-API-Key': 'knack',
         'Content-Type': 'application/json'
       },
