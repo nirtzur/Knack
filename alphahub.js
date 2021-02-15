@@ -6,8 +6,7 @@ window.addListeners = function($) {
       type: action,
       headers: {
         'X-Knack-Application-Id': ALPHAHUB_APP_ID,
-        'X-Knack-REST-API-Key': ALPHAHUB_CODE,
-        'Content-Type': "application/json"
+        'X-Knack-REST-API-Key': ALPHAHUB_CODE
       },
       data: data,
       success: function(response) {
