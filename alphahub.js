@@ -20,10 +20,11 @@ window.addListeners = function($) {
 
   function ajaxView(action, path, callback, data) {
     $.ajax({
-      url: 'https://api.knackhq.com/v1/pages/' + path,
+      url: 'https://api.knack.com/v1/scenes/' + path,
       type: action,
       headers: {
-        'X-Knack-Application-Id': ALPHAHUB_APP_ID,
+        'X-Knack-Application-Id': Knack.application_id,
+        'Authorization': Knack.getUserToken(),
         'X-Knack-REST-API-Key': 'knack',
         'Content-Type': 'application/json'
       },
@@ -360,16 +361,9 @@ window.addListeners = function($) {
 
   async function create_rehab_items(record) {
     var table = await new Promise(r => ajaxCall('GET', 'object_26/records?rows_per_page=1000', r));
-    var throttle = 9;
 
     var items = table.records.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
-        throttle -= 1;
-        if (throttle == 0) {
-          throttle = 7;
-          await new Promise(r => setTimeout(r, 700));
-        }
-
         var data = {};
         data['field_1379'] = record.id;
         data['field_1378'] = item.id;
