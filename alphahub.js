@@ -366,7 +366,7 @@ window.addListeners = function($) {
       arr.push(new Promise(async function(resolve, reject) {
         var data = {};
         data['field_1378'] = item.id;
-        data['field_1379'] = record.id;
+        data['field_1379'] = [record.id];
 
         ajaxView('POST', 'scene_365/views/view_714/records', resolve, data);
       }));
