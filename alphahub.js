@@ -345,26 +345,29 @@ window.addListeners = function($) {
   });
 
   async function create_rehab_items(record) {
-    var table = $('.view_704 tbody tr').toArray();
+    return new Promise(function(rslv, rjct) {
+      Knack.showSpinner();
+      var table = $('.view_704 tbody tr').toArray();
 
-    items = table.reduce( (arr, item) => {
-      arr.push(new Promise(function(resolve, reject) {
-        var data = {};
-        data['field_1379'] = record.id;
-        data['field_1378'] = item.id;
+      items = table.reduce( (arr, item) => {
+        arr.push(new Promise(function(resolve, reject) {
+          var data = {};
+          data['field_1379'] = record.id;
+          data['field_1378'] = item.id;
 
-        ajaxCall('POST', 'object_37/records', resolve, data);
-      }));
-      return arr;
-    }, []);
-    await Promise.all(items);
-    Knack.views["view_698"].model.fetch();
+          ajaxCall('POST', 'object_37/records', resolve, data);
+        }));
+        return arr;
+      }, []);
+      await Promise.all(items);
+      Knack.views["view_698"].model.fetch();
+      Knack.hideSpinner();
+      rslv("done");
+    });
   }
 
   // Create rehab types for property
-  $(document).on('knack-form-submit.view_697', function(event, view, record) {
-    Knack.showSpinner();
-    create_rehab_items(record);
-    Knack.hideSpinner();
+  $(document).on('knack-form-submit.view_697', async function(event, view, record) {
+    await create_rehab_items(record);
   });
 }
