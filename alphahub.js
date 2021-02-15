@@ -362,9 +362,9 @@ window.addListeners = function($) {
   }
 
   // Create rehab types for property
-  $(document).on('knack-form-submit.view_697', async function(event, view, record) {
+  $(document).on('knack-form-submit.view_697', function(event, view, record) {
     Knack.showSpinner();
-    await create_rehab_items(record);
+    create_rehab_items(record);
     Knack.hideSpinner();
   });
 }
