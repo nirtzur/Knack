@@ -346,7 +346,6 @@ window.addListeners = function($) {
 
   async function create_rehab_items(record) {
     return new Promise(async function(rslv, rjct) {
-      Knack.showSpinner();
       var table = $('.view_704 tbody tr').toArray();
 
       items = table.reduce( (arr, item) => {
@@ -361,7 +360,6 @@ window.addListeners = function($) {
       }, []);
       await Promise.all(items);
       Knack.views["view_698"].model.fetch();
-      Knack.hideSpinner();
       rslv("done");
     });
   }
@@ -369,5 +367,6 @@ window.addListeners = function($) {
   // Create rehab types for property
   $(document).on('knack-form-submit.view_697', async function(event, view, record) {
     await create_rehab_items(record);
+    ajaxCall('PUT', 'object_22/records/' + record.id, null, {"field_1389": true});
   });
 }
