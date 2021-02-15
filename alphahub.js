@@ -384,8 +384,7 @@ window.addListeners = function($) {
     });
   }
 
-  // wait for 'initialization completed' indication
-  $(document).on('knack-view-render.view_313', async function(event, view, data) {
+  async function wait_indication(data) {
     Knack.showSpinner();
     await new Promise(r => setTimeout(r, 21000));
     Knack.hideSpinner();
@@ -396,5 +395,10 @@ window.addListeners = function($) {
     }
 
     Knack.views["view_313"].model.fetch();
+  }
+
+  // wait for 'initialization completed' indication
+  $(document).on('knack-view-render.view_313', function(event, view, data) {
+    wait_indication(data);
   });
 }
