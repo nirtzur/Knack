@@ -348,7 +348,7 @@ window.addListeners = function($) {
     var table = $('.view_704 tbody tr').toArray();
     var throttle = 9;
 
-    items = table.reduce( (arr, item) => {
+    var items = table.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
         throttle -= 1;
         if (throttle == 0) {
@@ -365,13 +365,14 @@ window.addListeners = function($) {
       return arr;
     }, []);
     await Promise.all(items);
-    ajaxCall('PUT', 'object_22/records/' + record.id, null, {"field_1390": true});
+
     Knack.views["view_698"].model.fetch();
   }
 
   // wait for 'initialization completed' indication
   $(document).on('knack-view-render.view_731', function(event, view, data) {
     if (!data.field_1390_raw) {
+      ajaxCall('PUT', 'object_22/records/' + data.id, null, {"field_1390": true});
       create_rehab_items(data);
     }
   });
