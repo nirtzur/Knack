@@ -340,7 +340,7 @@ window.addListeners = function($) {
   });
 
   // hide rehab types data table
-  $(document).on('knack-page-render.scene_361', function(event, view, data) {
+  $(document).on('knack-page-render.scene_176', function(event, view, data) {
     $('#view_704').css('display', 'none');
   });
 
@@ -371,29 +371,8 @@ window.addListeners = function($) {
     });
   }
 
-  // Create rehab types for property
-  $(document).on('knack-form-submit.view_697', async function(event, view, record) {
-    await create_rehab_items(record);
-    ajaxCall('PUT', 'object_22/records/' + record.id, null, {"field_1389": true});
-  });
-
-  async function get_initialization_indication(data) {
-    await new Promise(r => setTimeout(r, 1000));
-    return new Promise(function(resolve, reject) {
-      ajaxCall('GET', 'object_22/records/' + data.id, function(response) { resolve(response.field_1389_raw); } );
-    });
-  }
-
   // wait for 'initialization completed' indication
   $(document).on('knack-view-render.view_313', async function(event, view, data) {
-    var indication = data.field_1389_raw;
-    var counter = 0;
-
-    while (!indication && counter < 20) {
-      counter += 1;
-      indication = await get_initialization_indication(data);
-    }
-
-    Knack.views["view_698"].model.fetch();
+    await create_rehab_items(record);
   });
 }
