@@ -365,8 +365,8 @@ window.addListeners = function($) {
     var items = table.records.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
         var data = {};
-        data['field_1378'] = [record.id];
-        data['field_1379'] = item.id;
+        data['field_1378'] = item.id;
+        data['field_1379'] = record.id;
 
         ajaxView('POST', 'scene_365/views/view_714/records', resolve, data);
       }));
