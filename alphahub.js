@@ -358,11 +358,6 @@ window.addListeners = function($) {
     });
   });
 
-  // hide rehab types data table
-  $(document).on('knack-page-render.scene_176', function(event, view, data) {
-    $('#view_704').css('display', 'none');
-  });
-
   async function create_rehab_items(record) {
     var table = await new Promise(r => ajaxCall('GET', 'object_26/records?rows_per_page=1000', r));
     var throttle = 9;
