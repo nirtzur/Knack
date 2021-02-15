@@ -384,21 +384,16 @@ window.addListeners = function($) {
     });
   }
 
-  async function wait_indication(data) {
-    Knack.showSpinner();
-    await new Promise(r => setTimeout(r, 21000));
-    Knack.hideSpinner();
+  // wait for 'initialization completed' indication
+  $(document).on('knack-view-render.view_313', async function(event, view, data) {
     var indication = data.field_1389_raw;
+    var counter = 0;
 
-    while (!indication) {
+    while (!indication && counter < 20) {
+      counter += 1;
       indication = await get_initialization_indication(data);
     }
 
-    Knack.views["view_313"].model.fetch();
-  }
-
-  // wait for 'initialization completed' indication
-  $(document).on('knack-view-render.view_313', function(event, view, data) {
-    wait_indication(data);
+    Knack.views["view_698"].model.fetch();
   });
 }
