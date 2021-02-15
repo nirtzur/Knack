@@ -374,7 +374,7 @@ window.addListeners = function($) {
         data['field_1379'] = record.id;
         data['field_1378'] = item.id;
 
-        ajaxView('POST', 'scene_365/views/view_714', resolve, data);
+        ajaxView('POST', 'scene_365/views/view_714/records', resolve, data);
       }));
       return arr;
     }, []);
