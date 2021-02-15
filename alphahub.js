@@ -366,6 +366,7 @@ window.addListeners = function($) {
         return arr;
       }, []);
       await Promise.all(items);
+      ajaxCall('PUT', 'object_22/records/' + record.id, null, {"field_1390": true});
       Knack.views["view_698"].model.fetch();
       rslv("done");
     });
@@ -373,6 +374,8 @@ window.addListeners = function($) {
 
   // wait for 'initialization completed' indication
   $(document).on('knack-view-render.view_313', async function(event, view, data) {
-    await create_rehab_items(record);
+    if (!data.field_1390_raw) {
+      await create_rehab_items(data);
+    }
   });
 }
