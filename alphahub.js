@@ -370,7 +370,7 @@ window.addListeners = function($) {
   }
 
   // wait for 'initialization completed' indication
-  $(document).on('knack-view-render.view_313', function(event, view, data) {
+  $(document).on('knack-view-render.view_731', function(event, view, data) {
     if (!data.field_1390_raw) {
       create_rehab_items(data);
     }
