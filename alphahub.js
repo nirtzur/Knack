@@ -18,6 +18,25 @@ window.addListeners = function($) {
     })
   }
 
+  function ajaxView(action, path, callback, data) {
+    $.ajax({
+      url: 'https://api.knackhq.com/v1/pages/' + path,
+      type: action,
+      headers: {
+        'X-Knack-Application-Id': ALPHAHUB_APP_ID,
+        'X-Knack-REST-API-Key': 'knack',
+        'Content-Type': 'application/json'
+      },
+      data: data,
+      success: function(response) {
+        typeof callback === 'function' && callback(response);
+      },
+      error: function(e) {
+        console.log(JSON.stringify(e));
+      }
+    })
+  }
+
   var new_identifier;
   var preproperty_id;
   var current_budget;
@@ -345,6 +364,7 @@ window.addListeners = function($) {
   });
 
   async function create_rehab_items(record) {
+    var tab = ajaxCall('GET', 'object_26');
     var table = $('.view_704 tbody tr').toArray();
     var throttle = 9;
 
@@ -360,7 +380,7 @@ window.addListeners = function($) {
         data['field_1379'] = record.id;
         data['field_1378'] = item.id;
 
-        ajaxCall('POST', 'object_37/records', resolve, data);
+        ajaxView('POST', 'scene_365/views/view_714', resolve, data);
       }));
       return arr;
     }, []);
