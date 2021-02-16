@@ -366,13 +366,13 @@ window.addListeners = function($) {
   function showProgress() {
     var td = $('.view_698 td.kn-td-nodata')
     if (td) {
-      td.textContent = "Loading...   Completed: " + completed + "  Errors: " + errors + " Out of total: " + total;
+      td[0].textContent = "Loading...   Completed: " + completed + "  Errors: " + errors + " Out of total: " + total;
     }
   }
 
   async function create_rehab_items(record) {
     var table = await new Promise(r => ajaxCall('GET', 'object_26/records?rows_per_page=1000', r));
-    total = table.recods,length;
+    total = table.records.length;
     completed = 0;
     errors = 0;
 
@@ -383,7 +383,7 @@ window.addListeners = function($) {
         data['field_1379'] = record.id;
 
         ajaxView('POST', 'scene_365/views/view_714/records', function() {
-          completed +- 1;
+          completed += 1;
           showProgress();
           resolve
         }, data);
