@@ -1,6 +1,6 @@
 window.addListeners = function($) {
 
-  function ajaxCall(action, path, callback, data) {
+  function ajaxCall(action, path, callback, data, errorcall) {
     $.ajax({
       url: 'https://api.knackhq.com/v1/objects/' + path,
       type: action,
@@ -14,6 +14,7 @@ window.addListeners = function($) {
       },
       error: function(e) {
         console.log(JSON.stringify(e));
+        typeof errorcall === 'function' && errorcall(e);
       }
     })
   }
@@ -382,11 +383,20 @@ window.addListeners = function($) {
         data['field_1378'] = [item.id];
         data['field_1379'] = record.id;
 
-        ajaxView('POST', 'scene_365/views/view_714/records', function() {
-          completed += 1;
-          showProgress();
-          resolve
-        }, data);
+        // ajaxView('POST', 'scene_365/views/view_714/records', function() {
+        ajaxCall('POST', 'object_37/records', 
+          function() {
+            completed += 1;
+            showProgress();
+            resolve;
+          }, 
+          data,
+          function() {
+            errors += 1;
+            showProgress();
+            reject;
+          }
+        );
       }));
       return arr;
     }, []);
