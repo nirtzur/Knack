@@ -398,7 +398,7 @@ window.addListeners = function($) {
           function() {
             errors += 1;
             showProgress();
-            reject();
+            resolve();
           }
         );
       }));
