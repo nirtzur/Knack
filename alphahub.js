@@ -359,16 +359,34 @@ window.addListeners = function($) {
     });
   });
 
+  var total = 0;
+  var completed = 0;
+  var errors = 0;
+
+  function showProgress() {
+    var td = $('.view_698 td.kn-td-nodata')
+    if (td) {
+      td.textContent = "Loading...   Completed: " + completed + "  Errors: " + errors + " Out of total: " + total;
+    }
+  }
+
   async function create_rehab_items(record) {
     var table = await new Promise(r => ajaxCall('GET', 'object_26/records?rows_per_page=1000', r));
+    total = table.recods,length;
+    completed = 0;
+    errors = 0;
 
     var items = table.records.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
         var data = {};
         data['field_1378'] = [item.id];
-        // data['field_1379'] = record.id;
+        data['field_1379'] = record.id;
 
-        ajaxView('POST', 'scene_365/views/view_714/records', resolve, data);
+        ajaxView('POST', 'scene_365/views/view_714/records', function() {
+          completed +- 1;
+          showProgress();
+          resolve
+        }, data);
       }));
       return arr;
     }, []);
@@ -377,11 +395,8 @@ window.addListeners = function($) {
     Knack.views["view_698"].model.fetch();
   }
 
-  // wait for 'initialization completed' indication
-  $(document).on('knack-view-render.view_731', function(event, view, data) {
-    if (!data.field_1390_raw) {
-      ajaxCall('PUT', 'object_22/records/' + data.id, null, {"field_1390": true});
-      create_rehab_items(data);
-    }
-  });
+  // create rehab items on new rehab property
+  $(document).on('knack-form-submit.view_697', function(event, view, record) {
+    create_rehab_items(record);
+  }
 }
