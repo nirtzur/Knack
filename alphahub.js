@@ -364,10 +364,14 @@ window.addListeners = function($) {
   var completed = 0;
   var errors = 0;
 
-  function showProgress() {
+  function showProgress(end = false) {
     var td = $('.view_698 td.kn-td-nodata')
-    if (td) {
-      td[0].textContent = "Loading...   Completed: " + completed + "  Errors: " + errors + " Out of total: " + total;
+    if (typeof td != "undefined") {
+      if (end) {
+        td[0].textContent = "Refreshing data...";
+      } else {
+        td[0].textContent = "Progress...   Completed: " + completed + "  Errors: " + errors + " Out of total: " + total;
+      }
     }
   }
 
@@ -402,6 +406,7 @@ window.addListeners = function($) {
     }, []);
     await Promise.all(items);
 
+    showProgress(true);
     Knack.views["view_698"].model.fetch();
   }
 
