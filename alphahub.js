@@ -381,7 +381,7 @@ window.addListeners = function($) {
     completed = 0;
     errors = 0;
 
-    var items = table.records.reduce( (arr, item) => {
+    items = table.records.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
         var data = {};
         data['field_1378'] = [item.id];
