@@ -366,7 +366,7 @@ window.addListeners = function($) {
 
   function showProgress(end = false) {
     var td = $('.view_698 td.kn-td-nodata')
-    if (typeof td != "undefined") {
+    if (typeof td[0] != "undefined") {
       if (end) {
         td[0].textContent = "Refreshing data...";
       } else {
