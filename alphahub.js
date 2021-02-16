@@ -392,13 +392,13 @@ window.addListeners = function($) {
           function() {
             completed += 1;
             showProgress();
-            resolve;
+            resolve();
           }, 
           data,
           function() {
             errors += 1;
             showProgress();
-            resolve;
+            reject();
           }
         );
       }));
