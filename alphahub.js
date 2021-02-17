@@ -412,6 +412,6 @@ window.addListeners = function($) {
 
   // create rehab items on new rehab property
   $(document).on('knack-form-submit.view_697', function(event, view, record) {
-    create_rehab_items(record);
+    // create_rehab_items(record);
   });
 }
