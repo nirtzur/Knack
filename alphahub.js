@@ -384,8 +384,10 @@ window.addListeners = function($) {
     items = table.records.reduce( (arr, item) => {
       arr.push(new Promise(async function(resolve, reject) {
         var data = {};
-        data['field_1378'] = [item.id];
-        data['field_1379'] = record.id;
+        // data['field_1378'] = [item.id];
+        data['field_1379'] = record.id; // property id
+        data['field_1398'] = item.item; // rehab setup item
+        data['field_1399'] = item.description; // rehab setup description
 
         // ajaxView('POST', 'scene_365/views/view_714/records', function() {
         ajaxCall('POST', 'object_37/records', 
@@ -412,6 +414,6 @@ window.addListeners = function($) {
 
   // create rehab items on new rehab property
   $(document).on('knack-form-submit.view_697', function(event, view, record) {
-    // create_rehab_items(record);
+    create_rehab_items(record);
   });
 }
