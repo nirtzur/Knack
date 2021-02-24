@@ -388,6 +388,7 @@ window.addListeners = function($) {
         data['field_1379'] = record.id; // property id
         data['field_1398'] = item.field_1366; // rehab setup item
         data['field_1399'] = item.field_1367; // rehab setup description
+        data['field_1401'] = item.field_1402; // iten sort order #
 
         // ajaxView('POST', 'scene_365/views/view_714/records', function() {
         ajaxCall('POST', 'object_37/records', 
