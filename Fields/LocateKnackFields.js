@@ -213,7 +213,7 @@ var LocateKnackFields = (function() {
           break;
         }
         case "value": {
-          var value = (typeof action["value"] === 'string') ? action["value"] : Object.values(action["value"]).join(' ');
+          var value = (typeof action["value"] === 'string') ? action["value"] : Object.values(action["value"] || {}).join(' ');
           action_string += " to custom value " + value;
           break;
         }
