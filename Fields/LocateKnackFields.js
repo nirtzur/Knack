@@ -4,7 +4,7 @@
 
 var LocateKnackFields = (function() {
   var data = {};
-  var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {} }
+  var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {}, javascript: {}, css: {} }
   var elements = [];
   var links = [];
   var graphScale = 1;
@@ -45,6 +45,8 @@ var LocateKnackFields = (function() {
         case "scenes": return new Scene(object, parent, this);
         case "views": return new View(object, parent, this);
         case "tasks": return new Task(object, parent, this);
+        case "javascript": return new Text(object, parent, this);
+        case "css": return new Text(object, parent, this);
       }
     }
 
@@ -80,6 +82,19 @@ var LocateKnackFields = (function() {
       this.count = "<br>Total entries: " + object["counts"]["total_entries"] + " records<br>Asset size: " + object["counts"]["asset_size"] + " bytes"
     }
     contains() { return [ "objects", "scenes" ] }
+
+    analyzeSettings() {
+      this.textLines(this.input["settings"]["javascript"], "javascript", "application");
+      this.textLines(this.input["settings"]["css"], "css", "application");
+    }
+
+    textLines(data, type) {
+      var app = this;
+      decodeURIComponent(data).split('\n').forEach(function(line, index) {
+        var number = index + 1;
+        app.create({key: type + " line " + number, name: line}, type);
+      });
+    };
   }
 
   class Record extends Base {
@@ -122,6 +137,10 @@ var LocateKnackFields = (function() {
 
   class View extends Base {
     builderLink() { return super.builderLink() + "pages/" + this.origin.key + "/views/" + this.key; }
+  }
+
+  class Text extends Base {
+    builderLink() { return super.builderLink() + "settings/api"; }
   }
 
   function fieldName(key) {
@@ -339,7 +358,7 @@ var LocateKnackFields = (function() {
 
   function locateUsedByFields() {
     var object;
-    ["fields", "views", "tasks"].forEach(function(item) {
+    ["fields", "views", "tasks", "javascript", "css"].forEach(function(item) {
       Object.keys(main[item]).forEach(function(key) {
         object = main[item][key];
         object.usedObjects(object["input"]);
@@ -363,7 +382,9 @@ var LocateKnackFields = (function() {
   }
 
   function loadObjectTypes() {
-    analyzeData(new Application(data["application"], "application"));
+    var application = new Application(data["application"], "application");
+    analyzeData(application);
+    application.analyzeSettings();
     main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application");
   }
 
