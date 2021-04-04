@@ -123,6 +123,14 @@ var LocateKnackFields = (function() {
   }
 
   class Field extends Base {
+    constructor(object, parent, origin) {
+      super(object, parent, origin);
+      this.conditional = object["conditional"];
+      this.format = prettifyFieldSettings(object["format"]);
+      this.rules = (object["rules"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");
+      this.validation = (object["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");;
+    }
+
     builderLink() { return super.builderLink() + "data/" + this.origin.key + "/fields/" + this.key; }
   }
   
@@ -141,6 +149,10 @@ var LocateKnackFields = (function() {
 
   class Text extends Base {
     builderLink() { return super.builderLink() + "settings/api"; }
+  }
+
+  function prettifyFieldSettings(data) {
+    return (JSON.stringify(data, null, ' ') || "").replace(/\"/g, "");
   }
 
   function fieldName(key) {
@@ -385,7 +397,7 @@ var LocateKnackFields = (function() {
     var application = new Application(data["application"], "application");
     analyzeData(application);
     application.analyzeSettings();
-    main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application");
+    main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application", application);
   }
 
   function searchdata() {
@@ -442,6 +454,10 @@ var LocateKnackFields = (function() {
             }
             case "tasks": {
               buildTable(main["tasks"], ["key", "name", "run_status", "used_by", "refers_to", "schedule", "criteria", "actions"], false);
+              break;
+            }
+            case "bookoffields": {
+              buildTable(main["fields"], ["key", "name", "conditional", "format", "rules", "validation"], false);
               break;
             }
             default: {
