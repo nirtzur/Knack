@@ -123,12 +123,11 @@ var LocateKnackFields = (function() {
   }
 
   class Field extends Base {
-    constructor(object, parent, origin) {
-      super(object, parent, origin);
-      this.conditional = object["conditional"];
-      this.format = prettifyFieldSettings(object["format"]);
-      this.rules = (object["rules"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");
-      this.validation = (object["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");;
+    additionalData() {
+      this.conditional = this.input["conditional"];
+      this.format = prettifyFieldSettings(this.input["format"]);
+      this.rules = (this.input["rules"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");
+      this.validation = (this.input["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");;
     }
 
     builderLink() { return super.builderLink() + "data/" + this.origin.key + "/fields/" + this.key; }
@@ -152,10 +151,18 @@ var LocateKnackFields = (function() {
   }
 
   function prettifyFieldSettings(data) {
-    return (JSON.stringify(data, null, ' ') || "").replace(/\"/g, "");
+    var regex = /(field_\d+)/g;
+    var txt = (JSON.stringify(data, null, ' ') || "").replace(/\"/g, "").slice(1,-1);
+    var match = [];
+
+    while (match = regex.exec(txt)) {
+      txt = txt.replace(match[1], fieldName(match[1]));
+    }
+    return txt;
   }
 
   function fieldName(key) {
+    if (typeof main["fields"][key] == "undefined") { return key; } 
     return main["fields"][key].origin.name + "." + main["fields"][key].name;
   }
 
@@ -457,6 +464,7 @@ var LocateKnackFields = (function() {
               break;
             }
             case "bookoffields": {
+              Object.keys(main.fields).forEach(function(field) { main.fields[field].additionalData() });
               buildTable(main["fields"], ["key", "name", "conditional", "format", "rules", "validation"], false);
               break;
             }
@@ -470,9 +478,9 @@ var LocateKnackFields = (function() {
           document.getElementsByClassName('kn-td-nodata')[0].innerText = "Invalid Application ID";
         }
       }
-      Knack.hideSpinner();
+     Knack.hideSpinner();
     };
-    Knack.showSpinner();
+   Knack.showSpinner();
     xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
     xhttp.send();
   }
@@ -580,7 +588,7 @@ var LocateKnackFields = (function() {
     }
 
     function drawGraph(object, paper) {
-      Knack.showSpinner();
+     Knack.showSpinner();
       current_object = object;
       elements = [];
       links = [];
@@ -591,7 +599,7 @@ var LocateKnackFields = (function() {
       graph.addCells(elements.concat(links));
       joint.layout.DirectedGraph.layout(graph, { rankSep: 20, nodeSep: 20, edgeSep: 20, rankDir: "LR" });
       paper.translate(0, 0);
-      Knack.hideSpinner();
+     Knack.hideSpinner();
     }
 
     function mouseEvent(delta, paper) {
