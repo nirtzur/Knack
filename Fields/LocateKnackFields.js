@@ -124,8 +124,10 @@ var LocateKnackFields = (function() {
 
   class Field extends Base {
     additionalData() {
-      this.conditional = this.input["conditional"];
-      this.format = prettifyFieldSettings(this.input["format"]);
+      var format = this.input["format"];
+      this.equation = prettifyFieldSettings(take(format, "equation"));
+      this.equation_type = take(format, "equation_type");
+      this.format = prettifyFieldSettings(format);
       this.rules = (this.input["rules"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");
       this.validation = (this.input["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");;
     }
@@ -150,14 +152,29 @@ var LocateKnackFields = (function() {
     builderLink() { return super.builderLink() + "settings/api"; }
   }
 
+  function take(object, key) {
+    var value;
+    if (object && typeof object != 'string') {
+      value = object[key];
+      delete object[key];
+    }
+    return value || "";
+  }
+
   function prettifyFieldSettings(data) {
+    if (!data) { return ""; }
     var regex = /(field_\d+)/g;
-    var txt = (JSON.stringify(data, null, ' ') || "").replace(/\"/g, "").slice(1,-1);
+    var txt = (JSON.stringify(data, null, ' ') || "").replace(/\"/g, "");
     var match = [];
+
+    if (typeof data != 'string') {
+      txt = txt.slice(1,-1);
+    }
 
     while (match = regex.exec(txt)) {
       txt = txt.replace(match[1], "<strong>" + fieldName(match[1]) + "</strong>");
     }
+
     return txt;
   }
 
@@ -465,7 +482,7 @@ var LocateKnackFields = (function() {
             }
             case "bookoffields": {
               Object.keys(main.fields).forEach(function(field) { main.fields[field].additionalData() });
-              buildTable(main["fields"], ["name", "key", "format", "rules", "validation", "conditional"], false, visual);
+              buildTable(main["fields"], ["name", "key", "equation", "equation_type", "format", "rules", "validation"], false, visual);
               break;
             }
             default: {
