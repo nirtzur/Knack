@@ -156,7 +156,7 @@ var LocateKnackFields = (function() {
     var match = [];
 
     while (match = regex.exec(txt)) {
-      txt = txt.replace(match[1], fieldName(match[1]));
+      txt = txt.replace(match[1], "<strong>" + fieldName(match[1]) + "</strong>");
     }
     return txt;
   }
@@ -323,6 +323,12 @@ var LocateKnackFields = (function() {
     return span;
   }
 
+  function sorted_data(records) {
+    var temp = [];
+    Object.keys(records).forEach(function(key) { temp.push(records[key]) });
+    return temp.sort(order);
+  }
+
   function buildCell(cell, record, key, click) {
     var object = record[key];
     if (!object || typeof object === 'string') {
@@ -343,11 +349,7 @@ var LocateKnackFields = (function() {
       });
     } else {
       var heading = "";
-      var sorted_objects = [];
-      var temp = [];
-      Object.keys(object).forEach(function(key) { temp.push(object[key]) });
-      sorted_objects = temp.sort(order);
-      sorted_objects.forEach(function(item){
+      sorted_data(object).forEach(function(item){
         if (heading != item.parent) {
           cell.appendChild(objectHeader(item));
           heading = item.parent;
@@ -357,15 +359,14 @@ var LocateKnackFields = (function() {
     };
   }
 
-  function buildTable(records, headers = ["name", "key", "used_by", "refers_to"], click = true) {
-    var record_keys = Object.keys(records);
+  function buildTable(records, headers = ["name", "key", "used_by", "refers_to"], click = true, visual = "") {
     var table = document.getElementsByClassName('kn-table-table')[0];
     cleanTable(table);
     createHeaders(table, headers);
 
-    Object.keys(records).forEach(function(record_id) {
+    sorted_data(records).forEach(function(record) {
+      if (visual == "bookoffields" && record.key == "not found fields") { return; }
       var row = table.tBodies[0].insertRow(-1);
-      var record = records[record_id];
       headers.forEach(function(key) {
         var cell = row.insertCell(-1);
         cell.className = 'cell-edit';
@@ -408,7 +409,6 @@ var LocateKnackFields = (function() {
   }
 
   function searchdata() {
-    var sorted_objects = [];
     var temp = [];
 
     ["objects", "fields", "scenes", "views", "tasks"].forEach(function(type) {
@@ -460,12 +460,12 @@ var LocateKnackFields = (function() {
               break;
             }
             case "tasks": {
-              buildTable(main["tasks"], ["key", "name", "run_status", "used_by", "refers_to", "schedule", "criteria", "actions"], false);
+              buildTable(main["tasks"], ["name", "key", "run_status", "used_by", "refers_to", "schedule", "criteria", "actions"], false);
               break;
             }
             case "bookoffields": {
               Object.keys(main.fields).forEach(function(field) { main.fields[field].additionalData() });
-              buildTable(main["fields"], ["key", "name", "conditional", "format", "rules", "validation"], false);
+              buildTable(main["fields"], ["name", "key", "format", "rules", "validation", "conditional"], false, visual);
               break;
             }
             default: {
