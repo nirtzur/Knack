@@ -179,7 +179,7 @@ var LocateKnackFields = (function() {
   }
 
   function fieldName(key) {
-    if (typeof main["fields"][key] == "undefined") { return key; } 
+    if (typeof main["fields"][key] == "undefined") { return "Field not found"; } 
     return main["fields"][key].origin.name + "." + main["fields"][key].name;
   }
 
