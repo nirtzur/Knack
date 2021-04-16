@@ -348,6 +348,7 @@ var LocateKnackFields = (function() {
 
   function buildCell(cell, record, key, click) {
     var object = record[key];
+    if (object.name) { object = object.name }
     if (!object || typeof object === 'string') {
       var span = document.createElement('span');
       span.innerHTML = object;
@@ -482,7 +483,7 @@ var LocateKnackFields = (function() {
             }
             case "bookoffields": {
               Object.keys(main.fields).forEach(function(field) { main.fields[field].additionalData() });
-              buildTable(main["fields"], ["name", "key", "equation", "equation_type", "format", "rules", "validation"], false, visual);
+              buildTable(main["fields"], ["name", "key", "origin", "equation", "equation_type", "format", "rules", "validation"], false, visual);
               break;
             }
             default: {
