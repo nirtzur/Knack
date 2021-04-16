@@ -15,6 +15,7 @@ var LocateKnackFields = (function() {
   var showViews = false;
   var showTasks = false;
   var showFields = false;
+  var progress = null;
 
   class Base {
     constructor(object, parent, origin = null) {
@@ -408,7 +409,14 @@ var LocateKnackFields = (function() {
     });
   }
 
+  function showProgress(object) {
+    if (progress) { 
+      progress.innerHTML = "Analyzing " + object.key;
+    }
+  }
+
   function analyzeData(object) {
+    showProgress(object);
     object.contains().forEach(function(item_type) {
       object.input[item_type].forEach(function(item) {
         var sub_object = object.create(item, item_type);
@@ -467,6 +475,7 @@ var LocateKnackFields = (function() {
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4) {
         if (this.status == 200) {
+          progress = document.getElementsByClassName('kn-td-nodata')[0];
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
           locateUsedByFields();
