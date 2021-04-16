@@ -16,6 +16,8 @@ var LocateKnackFields = (function() {
   var showTasks = false;
   var showFields = false;
 
+  if (typeof Knack == 'undefined') { Knack = { showSpinner() {}, hideSpinner() {} } };
+
   class Base {
     constructor(object, parent, origin = null) {
       this.input = object;
