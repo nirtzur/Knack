@@ -193,11 +193,12 @@ var LocateKnackFields = (function() {
         criteria = ["every record "];
       } else {
         item["criteria"].forEach(function(crt) {
-          criteria.push(crt["field"] + " " + crt["operator"] + " " + crt["value"] + " ");
+          var val_txt = crt["operator"].includes("blank") ? "" : " " + crt["value"];
+          criteria.push(crt["field"] + " " + crt["operator"] + val_txt);
         });
       }
       val = item["values"][0];
-      values = "Set " + val["field"] + " to " + (val["type"] == "value" ? val["value"] : val["input"]);
+      values = " Set " + val["field"] + " to " + (val["type"] == "value" ? val["value"] : val["input"]);
       rule.push("<li>When " + criteria.join(" and ") + values + "</li>");
     });
     return prettifyFieldSettings(rule.join(""));
