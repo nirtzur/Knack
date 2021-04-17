@@ -130,7 +130,7 @@ var LocateKnackFields = (function() {
       this.equation = prettifyFieldSettings(take(format, "equation"));
       this.equation_type = take(format, "equation_type");
       this.format = prettifyFieldSettings(format);
-      this.rules = (this.input["rules"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");
+      this.rules = prettyRules(this.input["rules"]);
       this.validation = (this.input["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");;
     }
 
@@ -178,6 +178,29 @@ var LocateKnackFields = (function() {
     }
 
     return txt;
+  }
+
+  function prettyRules(data) {
+    if (!data || data == []) { return "" }
+    var rule = [];
+    var val;
+
+    data.forEach(function(item) {
+      var values = null;
+      var criteria = [];
+
+      if (item["criteria"].length == 0) {
+        criteria = ["every record "];
+      } else {
+        item["criteria"].forEach(function(crt) {
+          criteria.push(crt["field"] + " " + crt["operator"] + " " + crt["value"] + " ");
+        });
+      }
+      val = item["values"][0];
+      values = "Set " + val["field"] + " to " + (val["input"] || val["value"]);
+      rule.push("<li>When " + criteria.join(" and ") + values + "</li>");
+    });
+    return prettifyFieldSettings(rule.join(""));
   }
 
   function fieldName(key) {
