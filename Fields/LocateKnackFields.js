@@ -193,7 +193,7 @@ var LocateKnackFields = (function() {
         criteria = ["every record "];
       } else {
         item["criteria"].forEach(function(crt) {
-          var val_txt = typeof crt["value"] != 'string' ? "" : " " + crt["value"];
+          var val_txt = typeof crt["value"] == 'object' ? "" : " " + crt["value"];
           criteria.push(crt["field"] + " " + crt["operator"] + val_txt);
         });
       }
