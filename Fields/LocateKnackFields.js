@@ -197,7 +197,7 @@ var LocateKnackFields = (function() {
         });
       }
       val = item["values"][0];
-      values = "Set " + val["field"] + " to " + (val["input"] || val["value"]);
+      values = "Set " + val["field"] + " to " + (val["type"] == "value" ? val["value"] : val["input"]);
       rule.push("<li>When " + criteria.join(" and ") + values + "</li>");
     });
     return prettifyFieldSettings(rule.join(""));
