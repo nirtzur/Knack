@@ -40,6 +40,7 @@ var LocateKnackFields = (function() {
     }
 
     contains() { return [] }
+    search_fields_in() { return this.input; }
 
     create(object, parent) { 
       switch(parent) {
@@ -87,6 +88,7 @@ var LocateKnackFields = (function() {
       this.count = "<br>Total entries: " + object["counts"]["total_entries"] + " records<br>Asset size: " + object["counts"]["asset_size"] + " bytes"
     }
     contains() { return [ "objects", "scenes" ] }
+    skip(item) { return item.key.startsWith("scene_") && item.name.startsWith("DELETED "); }
 
     analyzeSettings() {
       this.textLines(this.input["settings"]["javascript"], "javascript", "application");
@@ -148,6 +150,7 @@ var LocateKnackFields = (function() {
     }
     contains() { return [ "views" ] }
     skip(item) { return item.name.startsWith("DELETED VIEW"); }
+    search_fields_in() { return this.input.rules; }
     builderLink() { return super.builderLink() + "pages/" + this.key; }
   }
 
@@ -434,7 +437,7 @@ var LocateKnackFields = (function() {
     ["fields", "scenes" ,"views", "tasks", "javascript", "css"].forEach(function(item) {
       Object.keys(main[item]).forEach(function(key) {
         object = main[item][key];
-        object.usedObjects(object["input"]);
+        object.usedObjects(object.search_fields_in());
       });
     });
 
