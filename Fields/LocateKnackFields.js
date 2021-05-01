@@ -141,7 +141,11 @@ var LocateKnackFields = (function() {
       this.equation_type = take(format, "equation_type");
       this.format = prettifyFieldSettings(format);
       this.rules = prettyRules(this.input["rules"]);
-      this.validation = (this.input["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");;
+      this.validation = (this.input["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");
+      if (this.type == "connection") {
+        var relates = this.input.relationship;
+        this.type += "<br>(" + relates["belongs_to"] + " to " + relates["has"] + " " + main.objects[relates["object"]].name + ")";
+      }
     }
 
     builderLink() { return super.builderLink() + (new_builder ? "schema/list/objects/" : "data/") + this.origin.key + "/fields/" + this.key + (new_builder ? "/settings/" : ""); }
@@ -526,7 +530,7 @@ var LocateKnackFields = (function() {
             }
             case "bookoffields": {
               Object.keys(main.fields).forEach(function(field) { main.fields[field].additionalData() });
-              buildTable(main["fields"], ["name", "key", "origin", "equation", "equation_type", "format", "rules", "validation"], false, visual);
+              buildTable(main["fields"], ["name", "key", "type", "origin", "equation", "equation_type", "format", "rules", "validation"], false, visual);
               break;
             }
             default: {
