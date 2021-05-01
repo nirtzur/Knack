@@ -72,7 +72,7 @@ var LocateKnackFields = (function() {
     }
 
     builderLink() {
-      return "https://builder.knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + (new_builder ? "/" : " #");
+      return "https://builder.knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + (new_builder ? "/" : "#");
     }
 
     prettifyRelations() {};
@@ -85,7 +85,6 @@ var LocateKnackFields = (function() {
       super(object, parent);
       this.slug = object["slug"];
       this.account_name = object["account"]["slug"];
-      this.count = "<br>Total entries: " + object["counts"]["total_entries"] + " records<br>Asset size: " + object["counts"]["asset_size"] + " bytes"
     }
     contains() { return [ "objects", "scenes" ] }
     skip(item) { return item.key.startsWith("scene_") && item.name.startsWith("DELETED "); }
@@ -93,7 +92,12 @@ var LocateKnackFields = (function() {
     analyzeSettings() {
       this.textLines(this.input["settings"]["javascript"], "javascript", "application");
       this.textLines(this.input["settings"]["css"], "css", "application");
+
       new_builder = this.input["settings"]["v3_open_beta"];
+      this.count = "<li>Total entries: " + this.input["counts"]["total_entries"] + " records" + 
+                   "<li>Asset size: " + this.input["counts"]["asset_size"] + " bytes" + 
+                   "<li>Number of objects: " + Object.keys(main.objects).length + 
+                   "<li>Number of scenes: " + Object.keys(main.scenes).length
     }
 
     textLines(data, type) {
