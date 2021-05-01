@@ -479,10 +479,16 @@ var LocateKnackFields = (function() {
     ["objects", "fields", "scenes", "views", "tasks"].forEach(function(type) {
       Object.keys(main[type]).forEach(function(object) {
         obj = main[type][object];
-        if (obj.name != "not found") {
+        if (obj.name == "not found") { return }
+        temp.push({
+          value: obj.key,
+          text: obj.name + " (" + obj.key + " defined in " + obj.origin.name + ")",
+          parent: type,
+        });
+        if (type == "views" && obj.input.description) {
           temp.push({
             value: obj.key,
-            text: obj.name + " (" + obj.key + " defined in " + obj.origin.name + ")",
+            text: obj.input.description + " (description of " + obj.key + " defined in " + obj.origin.name + ")",
             parent: type,
           });
         }
