@@ -178,11 +178,11 @@ var LocateKnackFields = (function() {
     constructor(object, parent, origin) {
       super(object, parent, origin);
       this.criteria = prettifyFieldSettings("<li>" + prettyCriteria(object) + "</li>");
-      this.from_email = object.email.from_email;
-      this.from_name = object.email.from_name;
-      this.message = prettifyFieldSettings(object.email.message);
-      this.subject = prettifyFieldSettings(object.email.subject);
-      this.recipients = getRecipients(object.email.recipients);
+      this.from_email = object.email.from_email || "";
+      this.from_name = object.email.from_name || "";
+      this.message = prettifyFieldSettings(object.email.message || "");
+      this.subject = prettifyFieldSettings(object.email.subject || "");
+      this.recipients = getRecipients(object.email.recipients || []);
     }
   }
 
