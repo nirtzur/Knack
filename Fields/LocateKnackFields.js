@@ -4,7 +4,7 @@
 
 var LocateKnackFields = (function() {
   var data = {};
-  var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {}, javascript: {}, css: {} }
+  var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {}, javascript: {}, css: {}, emails: {} }
   var elements = [];
   var links = [];
   var graphScale = 1;
@@ -174,6 +174,18 @@ var LocateKnackFields = (function() {
     builderLink() { return super.builderLink() + "settings/api"; }
   }
 
+  class Email extends Base {
+    constructor(object, parent, origin) {
+      super(object, parent, origin);
+      this.criteria = prettifyFieldSettings("<li>" + prettyCriteria(object) + "</li>");
+      this.from_email = object.email.from_email;
+      this.from_name = object.email.from_name;
+      this.message = prettifyFieldSettings(object.email.message);
+      this.subject = prettifyFieldSettings(object.email.subject);
+      this.recipients = getRecipients(object.email.recipients);
+    }
+  }
+
   function take(object, key) {
     var value;
     if (object && typeof object != 'string') {
@@ -200,6 +212,20 @@ var LocateKnackFields = (function() {
     return txt;
   }
 
+  function prettyCriteria(item) {
+    var criteria = [];
+
+    if (!item["criteria"] || item["criteria"].length == 0) {
+      criteria = ["every record "];
+    } else {
+      item["criteria"].forEach(function(crt) {
+        var val_txt = typeof crt["value"] == 'object' ? "" : " " + crt["value"];
+        criteria.push(crt["field"] + " " + crt["operator"] + val_txt);
+      });
+    }
+    return("When " + criteria.join(" and "));
+  }
+
   function prettyRules(data) {
     if (!data || data == []) { return "" }
     var rule = [];
@@ -207,19 +233,9 @@ var LocateKnackFields = (function() {
 
     data.forEach(function(item) {
       var values = null;
-      var criteria = [];
-
-      if (item["criteria"].length == 0) {
-        criteria = ["every record "];
-      } else {
-        item["criteria"].forEach(function(crt) {
-          var val_txt = typeof crt["value"] == 'object' ? "" : " " + crt["value"];
-          criteria.push(crt["field"] + " " + crt["operator"] + val_txt);
-        });
-      }
       val = item["values"][0];
       values = " Set " + val["field"] + " to " + (val["type"] == "value" ? val["value"] : val["input"]);
-      rule.push("<li>When " + criteria.join(" and ") + values + "</li>");
+      rule.push("<li>" + prettyCriteria(item) + values + "</li>");
     });
     return prettifyFieldSettings(rule.join(""));
   }
@@ -307,6 +323,15 @@ var LocateKnackFields = (function() {
       action_array.push("Email subject \"" + actions["email"]["subject"] + "\"")
     }
     return action_array;
+  }
+
+  function getRecipients(recipients) {
+    if (!recipients) { return ""; }
+    var list = [];
+    recipients.forEach(function(recipient) {
+      list.push("<li>" + recipient.recipient_mode + " " + (recipient.recipient_type == "custom" ? recipient.field : recipient.email) + "</li>")
+    });
+    return prettifyFieldSettings(list.join(" "));
   }
 
   function order(a,b) {
@@ -473,6 +498,20 @@ var LocateKnackFields = (function() {
     main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application", application);
   }
 
+  function analyzeEmails() {
+    var key = 0;
+    Object.keys(main.views).forEach(function(view) {
+      var rules = main.views[view].input["rules"]
+      if (!rules) { return; }
+      var emails = rules["emails"]
+      if (!emails) { return; }
+      emails.forEach(function(email) {
+        new Email({ key: key, criteria: email.criteria, email: email.email }, "emails");
+        key += 1;
+      })
+    });
+  }
+
   function searchdata() {
     var temp = [];
 
@@ -537,6 +576,11 @@ var LocateKnackFields = (function() {
             case "bookoffields": {
               Object.keys(main.fields).forEach(function(field) { main.fields[field].additionalData() });
               buildTable(main["fields"], ["name", "key", "type", "origin", "equation", "equation_type", "format", "rules", "validation"], false, visual);
+              break;
+            }
+            case "emails": {
+              analyzeEmails();
+              buildTable(main["emails"], ["criteria", "from_email", "from_name", "subject", "recipients", "message"], false);
               break;
             }
             default: {
