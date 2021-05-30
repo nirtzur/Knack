@@ -506,7 +506,7 @@ var LocateKnackFields = (function() {
       var emails = rules["emails"]
       if (!emails) { return; }
       emails.forEach(function(email) {
-        new Email({ key: key, criteria: email.criteria, email: email.email }, "emails");
+        new Email({ key: key, criteria: email.criteria, email: email.email }, "emails", view);
         key += 1;
       })
     });
@@ -580,7 +580,7 @@ var LocateKnackFields = (function() {
             }
             case "emails": {
               analyzeEmails();
-              buildTable(main["emails"], ["criteria", "from_email", "from_name", "subject", "recipients", "message"], false);
+              buildTable(main["emails"], ["origin", "criteria", "from_email", "from_name", "subject", "recipients", "message"], false);
               break;
             }
             default: {
