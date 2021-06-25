@@ -15,7 +15,6 @@ var LocateKnackFields = (function() {
   var showViews = false;
   var showTasks = false;
   var showFields = false;
-  var new_builder = false;
 
   if (typeof Knack == 'undefined') { Knack = { showSpinner() {}, hideSpinner() {} } };
 
@@ -72,7 +71,7 @@ var LocateKnackFields = (function() {
     }
 
     builderLink() {
-      return "https://builder.knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + (new_builder ? "/" : "#");
+      return "https://builder.knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + "/";
     }
 
     prettifyRelations() {};
@@ -93,7 +92,6 @@ var LocateKnackFields = (function() {
       this.textLines(this.input["settings"]["javascript"], "javascript", "application");
       this.textLines(this.input["settings"]["css"], "css", "application");
 
-      new_builder = this.input["settings"]["v3_open_beta"];
       this.count = "<li>Total entries: " + this.input["counts"]["total_entries"] + " records" + 
                    "<li>Asset size: " + this.input["counts"]["asset_size"] + " bytes" + 
                    "<li>Number of objects: " + Object.keys(main.objects).length + 
@@ -116,7 +114,7 @@ var LocateKnackFields = (function() {
     }
 
     contains() { return [ "fields", "tasks" ] }
-    builderLink() { return super.builderLink() + (new_builder ? "schema/list/objects/" : "data/") + this.key; }
+    builderLink() { return super.builderLink() + "schema/list/objects/" + this.key; }
   }
 
   class Task extends Base {
@@ -125,7 +123,7 @@ var LocateKnackFields = (function() {
       this.run_status = object["run_status"];
     }
 
-    builderLink() { return super.builderLink() + (new_builder ? "tasks/objects/" : "data/") + this.origin.key + "/tasks/" + this.key + (new_builder ? "/task" : ""); }
+    builderLink() { return super.builderLink() + "tasks/objects/" + this.origin.key + "/tasks/" + this.key + "/task"; }
 
     prettifyRelations() {
       this.criteria = getTaskCriteria(this["input"]["action"]["criteria"]);
@@ -148,7 +146,7 @@ var LocateKnackFields = (function() {
       }
     }
 
-    builderLink() { return super.builderLink() + (new_builder ? "schema/list/objects/" : "data/") + this.origin.key + "/fields/" + this.key + (new_builder ? "/settings/" : ""); }
+    builderLink() { return super.builderLink() + "schema/list/objects/" + this.origin.key + "/fields/" + this.key + "/settings/"; }
   }
   
   class Scene extends Base {
@@ -167,7 +165,7 @@ var LocateKnackFields = (function() {
       super(object, parent, origin);
       this.type = (object["type"] == "registration" ? "form" : object["type"]);
     }
-    builderLink() { return super.builderLink() + "pages/" + this.origin.key + "/views/" + this.key + (new_builder ? "/" + this.type : ""); }
+    builderLink() { return super.builderLink() + "pages/" + this.origin.key + "/views/" + this.key + "/" + this.type; }
   }
 
   class Text extends Base {
