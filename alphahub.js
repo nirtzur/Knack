@@ -213,7 +213,7 @@ window.addListeners = function($) {
 
   // hide tables in backup screen
   $(document).on('knack-page-render.scene_151', function(event, view, data) {
-    $('#view_270 table, #view_271 table, #view_272 table').css('display', 'none');
+    $('#view_270 table, #view_271 table, #view_272 table, #view_738 table, #view_739 table').css('display', 'none');
   });
 
   // test
