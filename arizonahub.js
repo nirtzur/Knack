@@ -145,7 +145,7 @@ window.addListeners = function($) {
     // var amount = window.document.getElementsByClassName('field_241')[0].getElementsByTagName('td')[0].getElementsByTagName('span')[0].innerHTML;
     var amount = window.document.getElementsByClassName('field_241')[0].getElementsByClassName('kn-detail-body')[0].innerText;
     $("#field_297").val(amount);
-    $("#view_210-field_55").val("5f5d0f3925040f00158c5aba").trigger('liszt:updated');
+    $("#view_210-field_55").val("616ae93f74946507f6b4e1cb").trigger('liszt:updated');
   });
 
 
