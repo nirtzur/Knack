@@ -15,6 +15,7 @@ var LocateKnackFields = (function() {
   var showViews = false;
   var showTasks = false;
   var showFields = false;
+  var subdomain = null;
 
   if (typeof Knack == 'undefined') { Knack = { showSpinner() {}, hideSpinner() {} } };
 
@@ -22,7 +23,7 @@ var LocateKnackFields = (function() {
     constructor(object, parent, origin = null) {
       this.input = object;
       this.key = object["key"] || "Application";
-      this.name = object["name"];
+      this.name = object["name"].replace(/<[^>]*>?/gm, '');
       this.type = object["type"];
       this.parent = parent;
       if (origin) { this.origin = origin; }
@@ -71,7 +72,7 @@ var LocateKnackFields = (function() {
     }
 
     builderLink() {
-      return "https://builder.knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + "/";
+      return "https://builder" + subdomain + ".knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + "/";
     }
 
     prettifyRelations() {};
@@ -552,8 +553,8 @@ var LocateKnackFields = (function() {
     });
   }
 
-  function loadData(application_id, visual) {
-
+  function loadData(application_id, app_subdomain, visual) {
+    subdomain = app_subdomain ? "." + app_subdomain : "";
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4) {
@@ -594,7 +595,7 @@ var LocateKnackFields = (function() {
      Knack.hideSpinner();
     };
    Knack.showSpinner();
-    xhttp.open("GET", "https://api.knackhq.com/v1/applications/" + application_id, true);
+    xhttp.open("GET", "https://api" + subdomain + ".knack.com/v1/applications/" + application_id, true);
     xhttp.send();
   }
 
