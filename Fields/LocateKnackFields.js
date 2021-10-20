@@ -167,6 +167,19 @@ var LocateKnackFields = (function() {
       this.type = (object["type"] == "registration" ? "form" : object["type"]);
     }
     builderLink() { return super.builderLink() + "pages/" + this.origin.key + "/views/" + this.key + "/" + this.type; }
+
+    linkedScenes(scene_map) {
+      var regex = /\"scene\":\"([a-zA-Z0-9\-]+)\"/g;
+      var scene_key = "";
+      var scene;
+      var match = [];
+
+      while (match = regex.exec(JSON.stringify(this.input))) {
+        scene_key = match[1];
+        scene = main.scenes[scene_map[scene_key]];
+        this.relate(scene);
+      }
+    }
   }
 
   class Text extends Base {
@@ -490,6 +503,17 @@ var LocateKnackFields = (function() {
     });
   }
 
+  function locateLinkedScenes() {
+    var scene_map = {};
+    Object.keys(main.scenes).forEach(function(scene) {
+      scene_map[main.scenes[scene].slug] = main.scenes[scene].key;
+    });
+
+    Object.keys(main["views"]).forEach(function(view) {
+      main["views"][view].linkedScenes(scene_map);
+    });
+  }
+
   function loadObjectTypes() {
     var application = new Application(data["application"], "application");
     analyzeData(application);
@@ -562,6 +586,7 @@ var LocateKnackFields = (function() {
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
           locateUsedByFields();
+          locateLinkedScenes();
           switch(visual) {
             case "graph": {
               buildMapScreen();
