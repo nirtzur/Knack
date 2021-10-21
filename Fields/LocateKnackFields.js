@@ -35,8 +35,10 @@ var LocateKnackFields = (function() {
     }
 
     relate(sub_object) { 
-      this.refers_to[sub_object.key] = sub_object;
-      sub_object.used_by[this.key] = this;
+      if (sub_object.key) {
+        this.refers_to[sub_object.key] = sub_object;
+        sub_object.used_by[this.key] = this;
+      }
     }
 
     contains() { return [] }
