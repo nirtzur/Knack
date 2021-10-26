@@ -53,6 +53,7 @@ var LocateKnackFields = (function() {
         case "tasks": return new Task(object, parent, this);
         case "javascript": return new Text(object, parent, this);
         case "css": return new Text(object, parent, this);
+        case "application": return new Unknown(object, parent, this);
       }
     }
 
@@ -65,7 +66,10 @@ var LocateKnackFields = (function() {
       while (match = regex.exec(JSON.stringify(data))) {
         object_key = match[1];
         if (this.key != object_key) {
-          object = main[object_type][object_key] || main["fields"]["not found fields"];
+          object = main[object_type][object_key] || main.application[object_key];
+          if (!object) {
+            object = main.application["Application"].create({key: object_key, name: "unknown object"}, "application");
+          }
           this.relate(object);
         }
       }
@@ -178,7 +182,11 @@ var LocateKnackFields = (function() {
 
       while (match = regex.exec(JSON.stringify(this.input))) {
         scene_key = match[1];
-        scene = main.scenes[scene_map[scene_key]] || main["fields"]["not found fields"];
+        scene = main.scenes[scene_map[scene_key]] || main.application[scene_key];
+        if (!scene) {
+          scene = main.application["Application"].create({key: scene_key, name: "unknown scene"}, "application");
+          }
+
         this.relate(scene);
       }
     }
@@ -187,6 +195,8 @@ var LocateKnackFields = (function() {
   class Text extends Base {
     builderLink() { return super.builderLink() + "settings/api"; }
   }
+
+  class Unknown extends Base {}
 
   class Email extends Base {
     constructor(object, parent, origin) {
@@ -520,7 +530,6 @@ var LocateKnackFields = (function() {
     var application = new Application(data["application"], "application");
     analyzeData(application);
     application.analyzeSettings();
-    main["fields"]["not found fields"] = new Field({key: "not found fields", name: "not found"}, "application", application);
   }
 
   function analyzeEmails() {
