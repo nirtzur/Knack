@@ -178,7 +178,7 @@ var LocateKnackFields = (function() {
 
       while (match = regex.exec(JSON.stringify(this.input))) {
         scene_key = match[1];
-        scene = main.scenes[scene_map[scene_key]];
+        scene = main.scenes[scene_map[scene_key]] || main["fields"]["not found fields"];
         this.relate(scene);
       }
     }
