@@ -130,7 +130,7 @@ var LocateKnackFields = (function() {
       this.run_status = object["run_status"];
     }
 
-    builderLink() { return super.builderLink() + "tasks/objects/" + this.origin.key + "/tasks/" + this.key + "/task"; }
+    builderLink() { return super.builderLink() + "tasks/objects/" + this.origin.key + "/" + this.key + "/task"; }
 
     prettifyRelations() {
       this.criteria = getTaskCriteria(this["input"]["action"]["criteria"]);
