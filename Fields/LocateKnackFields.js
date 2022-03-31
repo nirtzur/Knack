@@ -2,7 +2,7 @@
 // This code belongs to Nir Tzur
 // Usage of this code is restricted to execute through find.knack.com only.
 
-var LocateKnackFields = (function() {
+var LocateKnackFields = (function () {
   var data = {};
   var main = { application: {}, objects: {}, fields: {}, scenes: {}, views: {}, tasks: {}, javascript: {}, css: {}, emails: {} }
   var elements = [];
@@ -17,7 +17,7 @@ var LocateKnackFields = (function() {
   var showFields = false;
   var subdomain = null;
 
-  if (typeof Knack == 'undefined') { Knack = { showSpinner() {}, hideSpinner() {} } };
+  if (typeof Knack == 'undefined') { Knack = { showSpinner() { }, hideSpinner() { } } };
 
   class Base {
     constructor(object, parent, origin = null) {
@@ -34,7 +34,7 @@ var LocateKnackFields = (function() {
       this.used_by = {};
     }
 
-    relate(sub_object) { 
+    relate(sub_object) {
       if (sub_object.key) {
         this.refers_to[sub_object.key] = sub_object;
         sub_object.used_by[this.key] = this;
@@ -44,8 +44,8 @@ var LocateKnackFields = (function() {
     contains() { return [] }
     search_fields_in() { return this.input; }
 
-    create(object, parent) { 
-      switch(parent) {
+    create(object, parent) {
+      switch (parent) {
         case "objects": return new Record(object, parent, this);
         case "fields": return new Field(object, parent, this);
         case "scenes": return new Scene(object, parent, this);
@@ -68,7 +68,7 @@ var LocateKnackFields = (function() {
         if (this.key != object_key) {
           object = main[object_type][object_key] || main.application[object_key];
           if (!object) {
-            object = main.application["Application"].create({key: object_key, name: "unknown object"}, "application");
+            object = main.application["Application"].create({ key: object_key, name: "unknown object" }, "application");
           }
           this.relate(object);
         }
@@ -81,7 +81,7 @@ var LocateKnackFields = (function() {
       return "https://builder" + subdomain + ".knack.com/" + main["application"]["Application"]["account_name"] + "/" + main["application"]["Application"]["slug"] + "/";
     }
 
-    prettifyRelations() {};
+    prettifyRelations() { };
 
     skip(item) { return false };
   }
@@ -92,24 +92,24 @@ var LocateKnackFields = (function() {
       this.slug = object["slug"];
       this.account_name = object["account"]["slug"];
     }
-    contains() { return [ "objects", "scenes" ] }
+    contains() { return ["objects", "scenes"] }
     skip(item) { return item.key.startsWith("scene_") && item.name.startsWith("DELETED "); }
 
     analyzeSettings() {
       this.textLines(this.input["settings"]["javascript"], "javascript", "application");
       this.textLines(this.input["settings"]["css"], "css", "application");
 
-      this.count = "<li>Total entries: " + this.input["counts"]["total_entries"] + " records" + 
-                   "<li>Asset size: " + this.input["counts"]["asset_size"] + " bytes" + 
-                   "<li>Number of objects: " + Object.keys(main.objects).length + 
-                   "<li>Number of scenes: " + Object.keys(main.scenes).length
+      this.count = "<li>Total entries: " + this.input["counts"]["total_entries"] + " records" +
+        "<li>Asset size: " + this.input["counts"]["asset_size"] + " bytes" +
+        "<li>Number of objects: " + Object.keys(main.objects).length +
+        "<li>Number of scenes: " + Object.keys(main.scenes).length
     }
 
     textLines(data, type) {
       var app = this;
-      decodeURIComponent(data).split('\n').forEach(function(line, index) {
+      decodeURIComponent(data).split('\n').forEach(function (line, index) {
         var number = index + 1;
-        app.create({key: type + " line " + number, name: line}, type);
+        app.create({ key: type + " line " + number, name: line }, type);
       });
     };
   }
@@ -120,7 +120,7 @@ var LocateKnackFields = (function() {
       this.count = "<br>Total entries: " + data["application"]["counts"][this.key] + " records";
     }
 
-    contains() { return [ "fields", "tasks" ] }
+    contains() { return ["fields", "tasks"] }
     builderLink() { return super.builderLink() + "schema/list/objects/" + this.key; }
   }
 
@@ -146,7 +146,7 @@ var LocateKnackFields = (function() {
       this.equation_type = take(format, "equation_type");
       this.format = prettifyFieldSettings(format);
       this.rules = prettyRules(this.input["rules"]);
-      this.validation = (this.input["validation"] || []).map(function(rule) { return prettifyFieldSettings(rule) }).join(", ");
+      this.validation = (this.input["validation"] || []).map(function (rule) { return prettifyFieldSettings(rule) }).join(", ");
       if (this.type == "connection") {
         var relates = this.input.relationship;
         this.type += "<br>(" + relates["belongs_to"] + " to " + relates["has"] + " " + main.objects[relates["object"]].name + ")";
@@ -155,14 +155,14 @@ var LocateKnackFields = (function() {
 
     builderLink() { return super.builderLink() + "schema/list/objects/" + this.origin.key + "/fields/" + this.key + "/settings/"; }
   }
-  
+
   class Scene extends Base {
     constructor(object, parent, origin) {
       super(object, parent, origin);
       this.slug = object["slug"];
     }
-    contains() { return [ "views" ] }
-    skip(item) { return item.name.startsWith("DELETED VIEW"); }
+    contains() { return ["views"] }
+    skip(item) { return item.name && item.name.startsWith("DELETED VIEW"); }
     search_fields_in() { return this.input.rules; }
     builderLink() { return super.builderLink() + "pages/" + this.key; }
   }
@@ -184,8 +184,8 @@ var LocateKnackFields = (function() {
         scene_key = match[1];
         scene = main.scenes[scene_map[scene_key]] || main.application[scene_key];
         if (!scene) {
-          scene = main.application["Application"].create({key: scene_key, name: "unknown scene"}, "application");
-          }
+          scene = main.application["Application"].create({ key: scene_key, name: "unknown scene" }, "application");
+        }
 
         this.relate(scene);
       }
@@ -196,7 +196,7 @@ var LocateKnackFields = (function() {
     builderLink() { return super.builderLink() + "settings/api"; }
   }
 
-  class Unknown extends Base {}
+  class Unknown extends Base { }
 
   class Email extends Base {
     constructor(object, parent, origin) {
@@ -226,7 +226,7 @@ var LocateKnackFields = (function() {
     var match = [];
 
     if (typeof data != 'string') {
-      txt = txt.slice(1,-1);
+      txt = txt.slice(1, -1);
     }
 
     while (match = regex.exec(txt)) {
@@ -242,12 +242,12 @@ var LocateKnackFields = (function() {
     if (!item["criteria"] || item["criteria"].length == 0) {
       criteria = ["every record "];
     } else {
-      item["criteria"].forEach(function(crt) {
+      item["criteria"].forEach(function (crt) {
         var val_txt = typeof crt["value"] == 'object' ? "" : " " + crt["value"];
         criteria.push(crt["field"] + " " + crt["operator"] + val_txt);
       });
     }
-    return("When " + criteria.join(" and "));
+    return ("When " + criteria.join(" and "));
   }
 
   function prettyRules(data) {
@@ -255,7 +255,7 @@ var LocateKnackFields = (function() {
     var rule = [];
     var val;
 
-    data.forEach(function(item) {
+    data.forEach(function (item) {
       var values = null;
       val = item["values"][0];
       values = " Set " + val["field"] + " to " + (val["type"] == "value" ? val["value"] : val["input"]);
@@ -265,13 +265,13 @@ var LocateKnackFields = (function() {
   }
 
   function fieldName(key) {
-    if (typeof main["fields"][key] == "undefined") { return "Field not found"; } 
+    if (typeof main["fields"][key] == "undefined") { return "Field not found"; }
     return main["fields"][key].origin.name + "." + main["fields"][key].name;
   }
 
   function getTaskCriteria(criteria) {
     var criteria_array = [];
-    criteria.forEach(function(crit) {
+    criteria.forEach(function (crit) {
       var value_string = "";
       if (crit["value"]) {
         if (typeof crit["value"]["date"] != "undefined") {
@@ -300,8 +300,8 @@ var LocateKnackFields = (function() {
     var action_array = [];
     var action_string = "";
 
-    switch(actions["action"]) {
-      case "record": { 
+    switch (actions["action"]) {
+      case "record": {
         action_string = "Update existing record";
         break;
       }
@@ -321,9 +321,9 @@ var LocateKnackFields = (function() {
 
     action_array.push(action_string);
 
-    actions["values"] && actions["values"].forEach(function(action) {
+    actions["values"] && actions["values"].forEach(function (action) {
       action_string = "Set " + fieldName(action["field"])
-      switch(action["type"]) {
+      switch (action["type"]) {
         case "record": {
           action_string += " to field " + fieldName(action["input"]) + " value";
           break;
@@ -352,13 +352,13 @@ var LocateKnackFields = (function() {
   function getRecipients(recipients) {
     if (!recipients) { return ""; }
     var list = [];
-    recipients.forEach(function(recipient) {
+    recipients.forEach(function (recipient) {
       list.push("<li>" + recipient.recipient_mode + " " + (recipient.recipient_type == "custom" ? recipient.field : recipient.email) + "</li>")
     });
     return prettifyFieldSettings(list.join(" "));
   }
 
-  function order(a,b) {
+  function order(a, b) {
     if (a.parent < b.parent) { return -1; }
     if (a.parent > b.parent) { return 1; }
     if (a.name < b.name) { return -1; }
@@ -393,7 +393,7 @@ var LocateKnackFields = (function() {
   function createHeaders(table, headers) {
     var header = table.tHead.insertRow(0);
 
-    headers.forEach(function(key) {
+    headers.forEach(function (key) {
       var th = document.createElement('th');
       var span = document.createElement('span');
       span.innerHTML = key;
@@ -437,7 +437,7 @@ var LocateKnackFields = (function() {
 
   function sorted_data(records) {
     var temp = [];
-    Object.keys(records).forEach(function(key) { temp.push(records[key]) });
+    Object.keys(records).forEach(function (key) { temp.push(records[key]) });
     return temp.sort(order);
   }
 
@@ -455,14 +455,14 @@ var LocateKnackFields = (function() {
       cell.appendChild(span);
     }
     else if (Object.prototype.toString.call(object) === '[object Array]') {
-      object.forEach(function(obj) {
+      object.forEach(function (obj) {
         var li = document.createElement('li');
         li.innerHTML = obj;
-        cell.appendChild(li);   
+        cell.appendChild(li);
       });
     } else {
       var heading = "";
-      sorted_data(object).forEach(function(item){
+      sorted_data(object).forEach(function (item) {
         if (heading != item.parent) {
           cell.appendChild(objectHeader(item));
           heading = item.parent;
@@ -477,10 +477,10 @@ var LocateKnackFields = (function() {
     cleanTable(table);
     createHeaders(table, headers);
 
-    sorted_data(records).forEach(function(record) {
+    sorted_data(records).forEach(function (record) {
       if (visual == "bookoffields" && record.key == "not found fields") { return; }
       var row = table.tBodies[0].insertRow(-1);
-      headers.forEach(function(key) {
+      headers.forEach(function (key) {
         var cell = row.insertCell(-1);
         cell.className = 'cell-edit';
         buildCell(cell, record, key, click);
@@ -491,22 +491,22 @@ var LocateKnackFields = (function() {
 
   function locateUsedByFields() {
     var object;
-    ["fields", "scenes" ,"views", "tasks", "javascript", "css"].forEach(function(item) {
-      Object.keys(main[item]).forEach(function(key) {
+    ["fields", "scenes", "views", "tasks", "javascript", "css"].forEach(function (item) {
+      Object.keys(main[item]).forEach(function (key) {
         object = main[item][key];
         object.usedObjects(object.search_fields_in());
       });
     });
 
-    Object.keys(main["objects"]).forEach(function(key) {
+    Object.keys(main["objects"]).forEach(function (key) {
       object = main["objects"][key];
       object.usedObjects(object["input"]["connections"]["inbound"], "objects");
     });
   }
 
   function analyzeData(object) {
-    object.contains().forEach(function(item_type) {
-      object.input[item_type].forEach(function(item) {
+    object.contains().forEach(function (item_type) {
+      object.input[item_type].forEach(function (item) {
         if (object.skip(item)) { return; }
         var sub_object = object.create(item, item_type);
         object.relate(sub_object);
@@ -517,11 +517,11 @@ var LocateKnackFields = (function() {
 
   function locateLinkedScenes() {
     var scene_map = {};
-    Object.keys(main.scenes).forEach(function(scene) {
+    Object.keys(main.scenes).forEach(function (scene) {
       scene_map[main.scenes[scene].slug] = main.scenes[scene].key;
     });
 
-    Object.keys(main["views"]).forEach(function(view) {
+    Object.keys(main["views"]).forEach(function (view) {
       main["views"][view].linkedScenes(scene_map);
     });
   }
@@ -534,12 +534,12 @@ var LocateKnackFields = (function() {
 
   function analyzeEmails() {
     var key = 0;
-    Object.keys(main.views).forEach(function(view) {
+    Object.keys(main.views).forEach(function (view) {
       var rules = main.views[view].input["rules"]
       if (!rules) { return; }
       var emails = rules["emails"]
       if (!emails) { return; }
-      emails.forEach(function(email) {
+      emails.forEach(function (email) {
         new Email({ key: key, criteria: email.criteria, email: email.email }, "emails", view);
         key += 1;
       })
@@ -549,8 +549,8 @@ var LocateKnackFields = (function() {
   function searchdata() {
     var temp = [];
 
-    ["objects", "fields", "scenes", "views", "tasks"].forEach(function(type) {
-      Object.keys(main[type]).forEach(function(object) {
+    ["objects", "fields", "scenes", "views", "tasks"].forEach(function (type) {
+      Object.keys(main[type]).forEach(function (object) {
         obj = main[type][object];
         if (obj.name == "not found") { return }
         temp.push({
@@ -577,13 +577,13 @@ var LocateKnackFields = (function() {
     select.style.width = '300px';
     document.getElementsByClassName('view_39')[0].appendChild(select);
     var selector = new Selectr('#selectFields', {
-      searchable: true, 
-      width: 300, 
-      data: searchdata(), 
+      searchable: true,
+      width: 300,
+      data: searchdata(),
       defaultSelected: false,
       placeholder: "Search fields"
     });
-    selector.on('selectr.select', function(option) {
+    selector.on('selectr.select', function (option) {
       buildTable({ "object": main[this.data[option.idx].parent][option["value"]] });
     });
   }
@@ -591,14 +591,14 @@ var LocateKnackFields = (function() {
   function loadData(application_id, app_subdomain, visual) {
     subdomain = app_subdomain ? "." + app_subdomain : "";
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    xhttp.onreadystatechange = function () {
       if (this.readyState == 4) {
         if (this.status == 200) {
           data = JSON.parse(xhttp.response);
           loadObjectTypes();
           locateUsedByFields();
           locateLinkedScenes();
-          switch(visual) {
+          switch (visual) {
             case "graph": {
               buildMapScreen();
               mapData();
@@ -609,7 +609,7 @@ var LocateKnackFields = (function() {
               break;
             }
             case "bookoffields": {
-              Object.keys(main.fields).forEach(function(field) { main.fields[field].additionalData() });
+              Object.keys(main.fields).forEach(function (field) { main.fields[field].additionalData() });
               buildTable(main["fields"], ["name", "key", "type", "origin", "equation", "equation_type", "format", "rules", "validation"], false, visual);
               break;
             }
@@ -628,27 +628,27 @@ var LocateKnackFields = (function() {
           document.getElementsByClassName('kn-td-nodata')[0].innerText = "Invalid Application ID";
         }
       }
-     Knack.hideSpinner();
+      Knack.hideSpinner();
     };
-   Knack.showSpinner();
+    Knack.showSpinner();
     xhttp.open("GET", "https://api" + subdomain + ".knack.com/v1/applications/" + application_id, true);
     xhttp.send();
   }
 
   function mapData(application_id) {
-    var Shape = joint.dia.Element.define('demo.Shape', 
+    var Shape = joint.dia.Element.define('demo.Shape',
       {
         attrs: {
           rect: { refWidth: '50%', refHeight: '100%', stroke: 'gray', strokeWidth: 1, rx: 10, ry: 10, style: 'cursor: zoom-in' },
           text: { refX: '25%', refY: '50%', yAlignment: 'middle', xAlignment: 'middle', fontSize: 12, style: 'cursor: zoom-in' }
         }
-      }, 
+      },
       {
         markup: '<rect/><text/>',
-        setText: function(text) { return this.attr('text/text', text || ''); },
-        setColor: function(text) {
-          color = function(text) {
-            switch(text) {
+        setText: function (text) { return this.attr('text/text', text || ''); },
+        setColor: function (text) {
+          color = function (text) {
+            switch (text) {
               case "objects": return "orange";
               case "fields": return "lightblue";
               case "scenes": return "green";
@@ -660,8 +660,8 @@ var LocateKnackFields = (function() {
 
           return this.attr('rect/fill', color(text));
         },
-        setWidth: function(text) {
-          var len = Math.max.apply(null, text.split("\n").map(function(txt) {return 10 + txt.length }));
+        setWidth: function (text) {
+          var len = Math.max.apply(null, text.split("\n").map(function (txt) { return 10 + txt.length }));
           return this.size(len * 9, 80);
         }
       }
@@ -669,31 +669,31 @@ var LocateKnackFields = (function() {
 
     var Link = joint.dia.Link.define('demo.Link',
       {
-        attrs: { 
+        attrs: {
           '.connection': { stroke: 'gray', strokeWidth: 1, pointerEvents: 'none' }
         },
-        connector: { name: 'rounded' }, 
+        connector: { name: 'rounded' },
         z: -1
       },
       {
         markup: '<path class="connection"/><path class="marker-target"/>',
-        connect: function(sourceId, targetId) {
+        connect: function (sourceId, targetId) {
           return this.set({ source: { id: sourceId }, target: { id: targetId } });
         },
       }
     );
-    
+
     function capFirst(string) { return string.charAt(0).toUpperCase() + string.slice(1); }
 
     function elementExists(object) {
-      var element = elements.find( (element) => { return(element.id == object.key) } );
+      var element = elements.find((element) => { return (element.id == object.key) });
       return typeof element != "undefined";
     }
 
     function addElement(object) {
       if (elements.length > 2000 || elementExists(object)) { return null; }
       var shapeText = capFirst(object.key.split('_')[0]) + ": " + object.name + "\n key: " + object.key;
-      if (["fields", "tasks", "views"].indexOf(object.parent) > -1 ) {
+      if (["fields", "tasks", "views"].indexOf(object.parent) > -1) {
         shapeText = shapeText + "\n defined in: " + capFirst(object.origin.key.split('_')[0]) + " " + object.origin.name
       }
       var shape = new Shape({ id: object.key }).setText(shapeText).setWidth(shapeText).setColor(object.parent);
@@ -703,7 +703,7 @@ var LocateKnackFields = (function() {
     }
 
     function showRelated(object_type) {
-      switch(object_type) {
+      switch (object_type) {
         case "objects": return showObjects;
         case "scenes": return showScenes;
         case "views": return showViews;
@@ -714,13 +714,13 @@ var LocateKnackFields = (function() {
     }
 
     function addRelated(object, related = "used_by") {
-      Object.keys(object[related]).forEach(function(item) {
+      Object.keys(object[related]).forEach(function (item) {
         if (showRelated(object[related][item].parent)) {
           var element = addElement(object[related][item]);
-          links.push( related == "used_by" ? new Link().connect(item, object.key) : new Link().connect(object.key, item));
+          links.push(related == "used_by" ? new Link().connect(item, object.key) : new Link().connect(object.key, item));
           // if (element && object[related]) { addRelated(object[related][item], related); }
         }
-      });      
+      });
     }
 
     function createAdjancyList(object) {
@@ -738,7 +738,7 @@ var LocateKnackFields = (function() {
     }
 
     function drawGraph(object, paper) {
-     Knack.showSpinner();
+      Knack.showSpinner();
       current_object = object;
       elements = [];
       links = [];
@@ -749,40 +749,40 @@ var LocateKnackFields = (function() {
       graph.addCells(elements.concat(links));
       joint.layout.DirectedGraph.layout(graph, { rankSep: 20, nodeSep: 20, edgeSep: 20, rankDir: "LR" });
       paper.translate(0, 0);
-     Knack.hideSpinner();
+      Knack.hideSpinner();
     }
 
     function mouseEvent(delta, paper) {
       if (mouse) {
-        graphScale += delta * 0.025; 
+        graphScale += delta * 0.025;
         paper.scale(graphScale);
-        setTimeout(function() { mouseEvent(delta, paper); }, 25);
+        setTimeout(function () { mouseEvent(delta, paper); }, 25);
       }
     }
 
     var graph = new joint.dia.Graph();
-  
+
     var paper = new joint.dia.Paper({ el: $('#paper'), width: 1200, height: 600, model: graph, gridSize: 1, drawGrid: true });
 
-    paper.on('cell:pointerclick', function(cellView, evt, x, y) { 
+    paper.on('cell:pointerclick', function (cellView, evt, x, y) {
       drawGraph(main[cellView.model.attributes.parent_object][cellView.model.id], paper);
     });
 
-    paper.on('blank:pointerdown', function(event, x, y) {
+    paper.on('blank:pointerdown', function (event, x, y) {
       dragStartPosition = { x: x * graphScale, y: y * graphScale };
     });
-    paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) { delete dragStartPosition; });
-    $("#diagram").mousemove(function(event) {
+    paper.on('cell:pointerup blank:pointerup', function (cellView, x, y) { delete dragStartPosition; });
+    $("#diagram").mousemove(function (event) {
       if (typeof dragStartPosition != 'undefined') {
         paper.translate(event.offsetX - dragStartPosition.x, event.offsetY - dragStartPosition.y);
       }
     });
 
-    $("#plus").on("mousedown", function() { mouse = true; mouseEvent(1, paper); });
-    $("#minus").on("mousedown", function() { mouse = true; mouseEvent(-1, paper); });
-    $("#plus, #minus").on("mouseup mouseout", function() { mouse = false; });
-    $("#reset").on("click", function() { mouse = false; graphScale = 1; paper.scale(graphScale); });
-    $(".check_box").on("change", function() { drawGraph(current_object, paper); });
+    $("#plus").on("mousedown", function () { mouse = true; mouseEvent(1, paper); });
+    $("#minus").on("mousedown", function () { mouse = true; mouseEvent(-1, paper); });
+    $("#plus, #minus").on("mouseup mouseout", function () { mouse = false; });
+    $("#reset").on("click", function () { mouse = false; graphScale = 1; paper.scale(graphScale); });
+    $(".check_box").on("change", function () { drawGraph(current_object, paper); });
 
     drawGraph(main["application"]["Application"], paper);
   };
@@ -810,26 +810,26 @@ var LocateKnackFields = (function() {
     var diagram = document.createElement('div');
     diagram.id = 'diagram'
     document.getElementById('view_45').appendChild(diagram);
-    
+
     var paper = document.createElement('div');
     paper.id = 'paper';
     paper.style.width = '1200px';
     paper.style.height = '600px';
     paper.style.border = '1px solid #D8DDE6';
     diagram.appendChild(paper);
-    
+
     diagram.appendChild(createButton('plus', 'zoom', 'Zoom In'));
     diagram.appendChild(createButton('reset', 'zoom', 'Reset'));
     diagram.appendChild(createButton('minus', 'zoom', 'Zoom Out'));
-    
+
     var summary = document.createElement('div');
     summary.id = 'summary';
     summary.style.textAlign = "center";
     diagram.appendChild(summary);
-    
+
     var checkBoxes = document.createElement('div');
     checkBoxes.className = 'kn-detail-body';
-    
+
     createCheckBox(checkBoxes, 'showObjects', "Show Objects");
     createCheckBox(checkBoxes, 'showScenes', "Show Scenes");
     createCheckBox(checkBoxes, 'showViews', "Show Views");
@@ -839,7 +839,7 @@ var LocateKnackFields = (function() {
     var application_id = document.getElementsByClassName('field_33')[0];
     application_id.appendChild(checkBoxes);
   }
-  
+
   return {
     loadData: loadData
   }
