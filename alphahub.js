@@ -339,17 +339,20 @@ window.addListeners = function ($) {
   });
 
   // Use one selector for two graphs in Report "Current Investments vs Budget Per Investor Trend Report"
-  $(document).on('knack-form-submit.view_662', function (event, view, record) {
-    var filter = [{ "field": "field_1127", "operator": "is", "value": record["field_55_raw"][0].id }];
-    var filter_string = encodeURIComponent(JSON.stringify(filter));
-    window.location.href = "https://alphahub.knack.com/database#reports/investor-budget-history-report/?view_642_0_filters=" + filter_string + "&view_642_1_filters=" + filter_string;
-    return false;
+  $(document).on('knack-view-render.view_662', function (event, view, record) {
+    $('#view_662 button[type=submit]').on("click", function (e) {
+      e.preventDefault();
+      var filter = [{ "field": "field_1127", "operator": "is", "value": $('#view_662-field_55').val() }];
+      var filter_string = encodeURIComponent(JSON.stringify(filter));
+      window.location.href = "https://alphahub.knack.com/database#reports/investor-budget-history-report/?view_642_0_filters=" + filter_string + "&view_642_1_filters=" + filter_string;
+      return false;
+    })
   });
+
 
   // Use one selector for all foremen results reports
   $(document).on('knack-view-render.view_668', function (event, view, data) {
     $('#view_668 input[type=submit]').on("click", function (e) {
-      debugger;
       var url = "https://alphahub.knack.com/database#reports/properties10/"
       var view_613_filter = [{ "value": "", "text": "12 Months", "operator": "is during the previous", "field": "field_112", "type": "rolling years", "range": "1" }]
       var view_613_string = encodeURIComponent(JSON.stringify(view_613_filter));
