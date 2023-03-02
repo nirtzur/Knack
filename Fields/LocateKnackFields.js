@@ -502,6 +502,11 @@ var LocateKnackFields = (function () {
       object = main["objects"][key];
       object.usedObjects(object["input"]["connections"]["inbound"], "objects");
     });
+
+    Object.keys(main["views"]).forEach(function (view) {
+      object = main["views"][view];
+      object.usedObjects(object["input"]["source"], "objects");
+    });
   }
 
   function analyzeData(object) {
