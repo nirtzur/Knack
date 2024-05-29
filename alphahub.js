@@ -115,10 +115,6 @@ window.addListeners = function ($) {
     $("div#view_91 tbody td span.col-0").each(function () {
       $(this).parent().parent().css("backgroundColor", $(this).parent().css("backgroundColor"));
     });
-    var cells = $("#view_91 tr.kn-table-totals td");
-    var a = parseInt(cells[36].innerText.replaceAll(/(\$|,)/g, ''));
-    var b = parseInt(cells[35].innerText.replaceAll(/(\$|,)/g, ''));
-    cells[37].innerHTML = '<strong>' +  (a/b*100).toFixed(2) + '</strong>';
   });
 
   $(document).on('knack-view-render.view_92', function (event, view, data) {
@@ -424,4 +420,12 @@ window.addListeners = function ($) {
   // $(document).on('knack-form-submit.view_697', function(event, view, record) {
   //   create_rehab_items(record);
   // });
+
+
+  $(document).on('knack-page-render.scene_51', function (event, page) {
+    var cells = $("#view_91 tr.kn-table-totals td");
+    var a = parseInt(cells[36].innerText.replaceAll(/(\$|,)/g, ''));
+    var b = parseInt(cells[35].innerText.replaceAll(/(\$|,)/g, ''));
+    cells[37].innerHTML = '<strong>' +  (a/b*100).toFixed(2) + '</strong>';
+  });
 }
