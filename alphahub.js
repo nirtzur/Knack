@@ -100,32 +100,36 @@ window.addListeners = function ($) {
 
   // set restriction and last action indication color on full row
   $(document).on('knack-view-render.view_88', function (event, view, data) {
-    $("tbody td span.col-0").each(function () {
+    $("div#view_88 tbody td span.col-0").each(function () {
       $(this).parent().parent().css("backgroundColor", $(this).parent().css("backgroundColor"));
     })
   });
 
   $(document).on('knack-view-render.view_89', function (event, view, data) {
-    $("tbody td span.col-0").each(function () {
+    $("div#view_89 tbody td span.col-0").each(function () {
       $(this).parent().parent().css("backgroundColor", $(this).parent().css("backgroundColor"));
     })
   });
 
   $(document).on('knack-view-render.view_91', function (event, view, data) {
-    $("tbody td span.col-0").each(function () {
+    $("div#view_91 tbody td span.col-0").each(function () {
       $(this).parent().parent().css("backgroundColor", $(this).parent().css("backgroundColor"));
-    })
+    });
+    var cells = $("#view_91 tr.kn-table-totals td");
+    var a = parseInt(cells[36].innerText.replaceAll(/(\$|,)/g, ''));
+    var b = parseInt(cells[35].innerText.replaceAll(/(\$|,)/g, ''));
+    a[37].innerHTML = '<strong>' +  (a/b*100).toFixed(2) + '</strong>';
   });
 
   $(document).on('knack-view-render.view_92', function (event, view, data) {
-    $("tbody td span.col-0").each(function () {
+    $("div#view_92 tbody td span.col-0").each(function () {
       $(this).parent().parent().css("backgroundColor", $(this).parent().css("backgroundColor"));
     })
   });
 
   // Add color to ESCROW Sell table
   $(document).on('knack-view-render.view_454', function (event, view, data) {
-    $("tbody td span.col-0").each(function () {
+    $("div#view_454 tbody td span.col-0").each(function () {
       $(this).parent().parent().css("backgroundColor", $(this).parent().css("backgroundColor"));
     })
   });
