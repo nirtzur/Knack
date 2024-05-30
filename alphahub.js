@@ -437,4 +437,14 @@ window.addListeners = function ($) {
     cells[12].innerHTML = '<strong>' +  (profit/totalCost*100).toFixed(2) + '</strong>'; // profit %
     cells[14].innerHTML = '<strong>' +  (profit/totalCost/months*100).toFixed(2) + '</strong>'; // profit per month %
   });
+
+  $(document).on('knack-view-render.view_141', function (event, view, data) {
+    var cells = $("#view_141 tr.kn-table-totals td");
+    var totalCost = parseFloat(cells[8].innerText.replaceAll(/(\$|,)/g, ''));
+    var profit = parseFloat(cells[11].innerText.replaceAll(/(\$|,)/g, ''));
+    var months = parseFloat(cells[13].innerText.replaceAll(/(\$|,)/g, ''));
+    cells[12].innerHTML = '<strong>' +  (profit/totalCost*100).toFixed(2) + '</strong>'; // profit %
+    cells[14].innerHTML = '<strong>' +  (profit/totalCost/months*100).toFixed(2) + '</strong>'; // profit per month %
+  });
+
 }
