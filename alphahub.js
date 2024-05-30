@@ -424,17 +424,17 @@ window.addListeners = function ($) {
 
   $(document).on('knack-page-render.scene_51', function (event, page) {
     var cells = $("#view_91 tr.kn-table-totals td");
-    var a = parseInt(cells[36].innerText.replaceAll(/(\$|,)/g, ''));
-    var b = parseInt(cells[35].innerText.replaceAll(/(\$|,)/g, ''));
+    var a = parseFloat(cells[36].innerText.replaceAll(/(\$|,)/g, ''));
+    var b = parseFloat(cells[35].innerText.replaceAll(/(\$|,)/g, ''));
     cells[37].innerHTML = '<strong>' +  (a/b*100).toFixed(2) + '</strong>';
   });
 
   $(document).on('knack-page-render.scene_81', function (event, page) {
     var cells = $("#view_141 tr.kn-table-totals td");
-    var totalCost = parseInt(cells[8].innerText.replaceAll(/(\$|,)/g, ''));
-    var profit = parseInt(cells[11].innerText.replaceAll(/(\$|,)/g, ''));
-    var months = parseInt(cells[13].innerText.replaceAll(/(\$|,)/g, ''));
-    cells[12].innerHTML = '<strong>' +  (totalCost/profit*100).toFixed(2) + '</strong>'; // profit %
-    cells[14].innerHTML = '<strong>' +  (totalCost/profit/months*100).toFixed(2) + '</strong>'; // profit per month %
+    var totalCost = parseFloat(cells[8].innerText.replaceAll(/(\$|,)/g, ''));
+    var profit = parseFloat(cells[11].innerText.replaceAll(/(\$|,)/g, ''));
+    var months = parseFloat(cells[13].innerText.replaceAll(/(\$|,)/g, ''));
+    cells[12].innerHTML = '<strong>' +  (profit/totalCost*100).toFixed(2) + '</strong>'; // profit %
+    cells[14].innerHTML = '<strong>' +  (profit/totalCost/months*100).toFixed(2) + '</strong>'; // profit per month %
   });
 }
