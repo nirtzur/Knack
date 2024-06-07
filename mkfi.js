@@ -51,7 +51,7 @@ window.addListeners = function($) {
     }
     
     $('.kn-message p')[0].innerHTML= "Redirecting to newly created record"
-    window.location.href = "https://mkfiprecision.knack.com/database#rehab-budget/pre-property-details/" + preproperty_id + "/view-budget-details/" + new_identifier;
+    window.location.href = "https://alphahub.knack.com/mkfiprecision-copy#rehab-budget/pre-property-details/" + preproperty_id + "/view-budget-details/" + new_identifier;
 
   }
 
@@ -220,7 +220,7 @@ window.addListeners = function($) {
     if (data["field_580_raw"]) {
       ajaxCall('PUT', 'object_22/records/' + data["id"], null , {"field_580": false});
       budget_id = /id=\"(\S+)\"/.exec(data["field_430"])[1];
-      window.location.href = "https://mkfiprecision.knack.com/database#rehab-budget/pre-property-details/" + data["id"] + "/view-budget-details/" + budget_id;
+      window.location.href = "https://alphahub.knack.com/mkfiprecision-copy#rehab-budget/pre-property-details/" + data["id"] + "/view-budget-details/" + budget_id;
     }
   });
 
@@ -321,7 +321,7 @@ window.addListeners = function($) {
     $('#view_662 input[type=submit]').on("click", function(e) {
       var filter = [{"field":"field_1127","operator":"is","value": $('#view_662-field_55').val()}];
       var filter_string = encodeURIComponent(JSON.stringify(filter));
-      window.location.href = "https://mkfiprecision.knack.com/database#reports/investor-budget-history-report/?view_642_0_filters=" + filter_string + "&view_642_1_filters=" + filter_string;
+      window.location.href = "https://alphahub.knack.com/mkfiprecision-copy#reports/investor-budget-history-report/?view_642_0_filters=" + filter_string + "&view_642_1_filters=" + filter_string;
     return false;
     });
   });
@@ -330,7 +330,7 @@ window.addListeners = function($) {
   $(document).on('knack-view-render.view_668', function(event, view, data) {
     $('#view_668 input[type=submit]').on("click", function(e) {
       debugger;
-      var url = "https://mkfiprecision.knack.com/database#reports/properties10/"
+      var url = "https://alphahub.knack.com/mkfiprecision-copy#reports/properties10/"
       var view_613_filter = [{"value":"","text":"12 Months","operator":"is during the previous","field":"field_112","type":"rolling years","range":"1"}]
       var view_613_string = encodeURIComponent(JSON.stringify(view_613_filter));
       var filter = [{"field":"field_914","operator":"is","value": $('#view_668-field_914').val()}];
